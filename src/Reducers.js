@@ -1,10 +1,22 @@
-function Reducer (state, action) {
+const initState = {
+    search: {
+        index: 0,
+        history: [""],
+    }
+}
 
-    let NewState = {...state}
+function Reducer (state = initState, action) {
+
+    let newState = {...state}
+
     switch (action.type) {
 
+        case "INIT":
+            newState = {...initState }
+            break
+
         case "MOCK_DATA":
-            NewState = {
+            newState = {
                 ...state,
                 references: [
                     {
@@ -23,23 +35,87 @@ function Reducer (state, action) {
             break
 
         case "UPDATE_SEARCH_STRING":
-            NewState = {
+            let newHistory1 = [...newState.search.history]
+            let newIndex1 = newState.search.index + 1
+            newHistory1.splice(newIndex1, 0, action.string)
+            newState = {
                 ...state,
-                search: action.string
+                search: {
+                    ...newState.search,
+                    history: newHistory1,
+                    index: newIndex1,
+                }
             }
             break
 
         case "ADD_STRING_TO_SEARCH":
-            NewState = {
+            if (newState.search.history[newState.search.index] === " " + action.string) {
+                return newState
+            }
+            let newHistory2 = [...newState.search.history]
+            let newIndex2 = newState.search.index + 1
+            newHistory2.splice(newIndex2, 0, newState.search.history[newState.search.index] + " " + action.string)
+            newState = {
                 ...state,
-                search: state.search ? state.search + " " + action.string : action.string
+                search: {
+                    ...newState.search,
+                    history: newHistory2,
+                    index: newIndex2,
+                }
+            }
+            break
+
+        case "PREVIOUS_SEARCH_STRING":
+            newState = {
+                ...state,
+                search: {
+                    ...newState.search,
+                    index: Math.max(--newState.search.index, 0),
+                }
+            }
+            break
+
+        case "NEXT_SEARCH_STRING":
+            let newHistory3 = [...newState.search.history]
+            if (newState.search.index + 1 === newState.search.history.length) {
+                if (newHistory3[newState.search.index] !== "") {
+                    newHistory3 = [...newState.search.history, ""]
+                }
+            }
+            newState = {
+                ...state,
+                search: {
+                    ...newState.search,
+                    history: newHistory3,
+                    index: Math.min(++newState.search.index, newHistory3.length - 1),
+                }
             }
             break
 
         case "CLEAR_SEARCH_STRING":
-            NewState = {
+            if (newState.search.history[newState.search.index] === "") {
+                return newState
+            }
+            newState = {
                 ...state,
-                search: ""
+                search: {
+                    ...newState.search,
+                    index: ++newState.search.index,
+                    history: [...newState.search.history, ""],
+                }
+            }
+            break
+
+        case "ADD_AND_TO_SEARCH_STRING":
+        let newHistory4 = [...newState.search.history, newState.search.history[newState.search.index] + " and "]
+        let newIndex4 = newState.search.index + 1
+        newState = {
+                ...state,
+                search: {
+                    ...newState.search,
+                    index: newIndex4,
+                    history: newHistory4
+                }
             }
             break
 
@@ -47,7 +123,7 @@ function Reducer (state, action) {
             break
     }
 
-    return NewState
+    return newState
 }
 
 export default Reducer
