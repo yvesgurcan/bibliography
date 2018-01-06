@@ -183,9 +183,7 @@ function ExamineReferences(searchString, references) {
     
     searchString = searchString.toLowerCase()
 
-    // let wordClusters = searchString.split(/ +/)
-    // wordClusters = wordClusters.map(cluster => cluster.trim())
-
+    let negative = false
 
     let andClusters = []
     let andMatchesRequired = 0
@@ -205,47 +203,56 @@ function ExamineReferences(searchString, references) {
         let globalMatches = {match: 0, matchedClusters: []}
         let matchResults = null
 
-        unmatchedClusters.map(andCluster => {
-            matchResults = CheckCluster(andCluster, reference.name, globalMatches.match)
+        unmatchedClusters.map((andCluster, index) => {
+            matchResults = CheckCluster(orClusters[index], andCluster, reference.name, globalMatches.match)
             globalMatches = {
                 match: matchResults.match,
                 matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
             }
+            negative = matchResults.negative
             return null
         })
+        // if (negative) return false
         unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
 
-        unmatchedClusters.map(andCluster => {
-            matchResults = CheckCluster(andCluster, reference.description, globalMatches.match)
+        unmatchedClusters.map((andCluster, index) => {
+            matchResults = CheckCluster(orClusters[index], andCluster, reference.description, globalMatches.match)
             globalMatches = {
                 match: matchResults.match,
                 matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
             }
+            negative = matchResults.negative
             return null
         })
+        // console.log(negative, matchResults)
+        // if (negative) return false
         unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
 
-        unmatchedClusters.map(andCluster => {
-            matchResults = CheckCluster(andCluster, reference.author, globalMatches.match)
+        unmatchedClusters.map((andCluster, index) => {
+            matchResults = CheckCluster(orClusters[index], andCluster, reference.author, globalMatches.match)
             globalMatches = {
                 match: matchResults.match,
                 matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
             }
+            negative = matchResults.negative
             return null
         })
+        // if (negative) return false
         unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
 
-        unmatchedClusters.map(andCluster => {
+        unmatchedClusters.map((andCluster, index) => {
             reference.tags.map(tag => {
-                matchResults = CheckCluster(andCluster, tag, globalMatches.match)
+                matchResults = CheckCluster(orClusters[index], andCluster, tag, globalMatches.match)
                 globalMatches = {
                     match: matchResults.match,
                     matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
                 }
+                negative = matchResults.negative
                 return null
             })
             return null
         })
+        // if (negative) return false
         unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
 
         return globalMatches.match >= andMatchesRequired
@@ -254,16 +261,66 @@ function ExamineReferences(searchString, references) {
     return results
 }
 
-function CheckCluster(cluster, text, match) {
-    let regEx = new RegExp(cluster.join("|"), "g")
+function CheckCluster(allClusters, cluster, text, match) {
+
+    console.log("cluster",cluster)
+
+    let negativeCluster = []
+    let positiveCluster = []
+    let skipNextFragment = false
+    console.log(cluster)
+    cluster.map((fragment, index) => {
+        if (fragment === "not") {
+            skipNextFragment = true
+        }
+        else {
+            if (!skipNextFragment) {
+                skipNextFragment = false
+                positiveCluster.push(fragment)    
+            }
+        }
+        return null
+    })
+
+    allClusters.map((fragment, index) => {
+        if (fragment === "not") {
+            if (index < cluster.length && cluster[Number(index+1)] !== undefined) {
+                negativeCluster.push(cluster[Number(index+1)])
+                skipNextFragment = true    
+            }
+        }
+        return null
+    })
+
+    console.log(
+        {
+            negative: negativeCluster,
+            positive: positiveCluster,
+        }
+    )
+
     let matchedClusters = []
-    let comparison = text.toLowerCase().match(regEx)
-    if (comparison !== null) {
-        matchedClusters.push(comparison[0])
-        match++
+    if (positiveCluster.length > 0) {
+        let regEx = new RegExp(positiveCluster.join("|"), "g")
+        let comparison = text.toLowerCase().match(regEx)
+        if (comparison !== null) {
+            matchedClusters.push(comparison[0])
+            match++
+        }
     }
 
-    return {match: match, matchedClusters: matchedClusters}
+    let negative = false
+    if (negativeCluster.length > 0) {
+        let regExNegative = new RegExp(negativeCluster.join("|"), "g")
+        let matchedClusters2 = []
+        let comparison2 = text.toLowerCase().match(regExNegative)
+        if (comparison2 !== null) {
+            matchedClusters2.push(comparison2[0])
+            negative = true
+        }
+    }
+
+    return {match: match, matchedClusters: matchedClusters, negative: negative}
 }
 
 function RemoveMatchedClusters(clusters, matchedClusters) {
