@@ -9,10 +9,14 @@ function Reducer (state = initState, action) {
 
     let newState = {...state}
 
+    let newHistory = []
+    let newIndex = []
+    let filteredReferences = []
+
     switch (action.type) {
 
         case "INIT":
-            newState = {...initState }
+            newState = {...initState}
             break
 
         case "MOCK_DATA":
@@ -32,19 +36,25 @@ function Reducer (state = initState, action) {
                     }
                 ],
             }
+            newState.filteredReferences = [...newState.references]
             break
 
         case "UPDATE_SEARCH_STRING":
-            let newHistory1 = [...newState.search.history]
-            let newIndex1 = newState.search.index + 1
-            newHistory1.splice(newIndex1, 0, action.string)
+            newHistory = [...newState.search.history]
+            newIndex = newState.search.index + 1
+            newHistory.splice(newIndex, 0, action.string)
             newState = {
                 ...state,
                 search: {
                     ...newState.search,
-                    history: newHistory1,
-                    index: newIndex1,
+                    history: newHistory,
+                    index: newIndex,
                 }
+            }
+            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
+            newState = {
+                ...newState,
+                filteredReferences: filteredReferences,
             }
             break
 
@@ -52,16 +62,21 @@ function Reducer (state = initState, action) {
             if (newState.search.history[newState.search.index] === " " + action.string) {
                 return newState
             }
-            let newHistory2 = [...newState.search.history]
-            let newIndex2 = newState.search.index + 1
-            newHistory2.splice(newIndex2, 0, newState.search.history[newState.search.index] + " " + action.string)
+            newHistory = [...newState.search.history]
+            newIndex = newState.search.index + 1
+            newHistory.splice(newIndex, 0, newState.search.history[newState.search.index] + " " + action.string)
             newState = {
                 ...state,
                 search: {
                     ...newState.search,
-                    history: newHistory2,
-                    index: newIndex2,
+                    history: newHistory,
+                    index: newIndex,
                 }
+            }
+            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
+            newState = {
+                ...newState,
+                filteredReferences: filteredReferences,
             }
             break
 
@@ -73,22 +88,32 @@ function Reducer (state = initState, action) {
                     index: Math.max(--newState.search.index, 0),
                 }
             }
+            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
+            newState = {
+                ...newState,
+                filteredReferences: filteredReferences,
+            }
             break
 
         case "NEXT_SEARCH_STRING":
-            let newHistory3 = [...newState.search.history]
+            newHistory = [...newState.search.history]
             if (newState.search.index + 1 === newState.search.history.length) {
-                if (newHistory3[newState.search.index] !== "") {
-                    newHistory3 = [...newState.search.history, ""]
+                if (newHistory[newState.search.index] !== "") {
+                    newHistory = [...newState.search.history, ""]
                 }
             }
             newState = {
                 ...state,
                 search: {
                     ...newState.search,
-                    history: newHistory3,
-                    index: Math.min(++newState.search.index, newHistory3.length - 1),
+                    history: newHistory,
+                    index: Math.min(++newState.search.index, newHistory.length - 1),
                 }
+            }
+            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
+            newState = {
+                ...newState,
+                filteredReferences: filteredReferences,
             }
             break
 
@@ -104,18 +129,46 @@ function Reducer (state = initState, action) {
                     history: [...newState.search.history, ""],
                 }
             }
+            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
+            newState = {
+                ...newState,
+                filteredReferences: filteredReferences,
+            }
             break
 
         case "ADD_AND_TO_SEARCH_STRING":
-        let newHistory4 = [...newState.search.history, newState.search.history[newState.search.index] + " and "]
-        let newIndex4 = newState.search.index + 1
-        newState = {
+            newHistory = [...newState.search.history, newState.search.history[newState.search.index] + " and "]
+            newIndex = newState.search.index + 1
+            newState = {
                 ...state,
                 search: {
                     ...newState.search,
-                    index: newIndex4,
-                    history: newHistory4
+                    index: newIndex,
+                    history: newHistory,
                 }
+            }
+            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
+            newState = {
+                ...newState,
+                filteredReferences: filteredReferences,
+            }
+            break
+        
+        case "ADD_NOT_TO_SEARCH_STRING":
+            newHistory = [...newState.search.history, newState.search.history[newState.search.index] + " not "]
+            newIndex = newState.search.index + 1
+            newState = {
+                ...state,
+                search: {
+                    ...newState.search,
+                    index: newIndex,
+                    history: newHistory,
+                }
+            }
+            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
+            newState = {
+                ...newState,
+                filteredReferences: filteredReferences,
             }
             break
 
@@ -124,6 +177,107 @@ function Reducer (state = initState, action) {
     }
 
     return newState
+}
+
+function ExamineReferences(searchString, references) {
+    
+    searchString = searchString.toLowerCase()
+
+    // let wordClusters = searchString.split(/ +/)
+    // wordClusters = wordClusters.map(cluster => cluster.trim())
+
+
+    let andClusters = []
+    let andMatchesRequired = 0
+    if (searchString.split) {
+        andClusters = searchString.split("and")
+        andClusters = andClusters.map(cluster => cluster.trim())
+        andClusters = andClusters.filter(cluster => cluster !== "")
+        andMatchesRequired = andClusters.length
+    }
+
+    let orClusters = andClusters.map(cluster => cluster.split(/ +/))
+
+    let unmatchedClusters = [...orClusters]
+
+    let results = references.filter((reference) => {
+
+        let globalMatches = {match: 0, matchedClusters: []}
+        let matchResults = null
+
+        unmatchedClusters.map(andCluster => {
+            matchResults = CheckCluster(andCluster, reference.name, globalMatches.match)
+            globalMatches = {
+                match: matchResults.match,
+                matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
+            }
+            return null
+        })
+        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
+
+        unmatchedClusters.map(andCluster => {
+            matchResults = CheckCluster(andCluster, reference.description, globalMatches.match)
+            globalMatches = {
+                match: matchResults.match,
+                matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
+            }
+            return null
+        })
+        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
+
+        unmatchedClusters.map(andCluster => {
+            matchResults = CheckCluster(andCluster, reference.author, globalMatches.match)
+            globalMatches = {
+                match: matchResults.match,
+                matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
+            }
+            return null
+        })
+        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
+
+        unmatchedClusters.map(andCluster => {
+            reference.tags.map(tag => {
+                matchResults = CheckCluster(andCluster, tag, globalMatches.match)
+                globalMatches = {
+                    match: matchResults.match,
+                    matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
+                }
+                return null
+            })
+            return null
+        })
+        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
+
+        return globalMatches.match >= andMatchesRequired
+    })
+
+    return results
+}
+
+function CheckCluster(cluster, text, match) {
+    let regEx = new RegExp(cluster.join("|"), "g")
+    let matchedClusters = []
+    let comparison = text.toLowerCase().match(regEx)
+    if (comparison !== null) {
+        matchedClusters.push(comparison[0])
+        match++
+    }
+
+    return {match: match, matchedClusters: matchedClusters}
+}
+
+function RemoveMatchedClusters(clusters, matchedClusters) {
+
+    if (matchedClusters.length === 0) return [...clusters]
+
+    let unmatchedClusters = [...clusters].map(andCluster => andCluster.filter(orCluster => {
+        if (orCluster.indexOf(matchedClusters) === -1) {
+            return true
+        }
+        return false
+    })).filter(andCluster => andCluster.length > 0)
+
+    return [...unmatchedClusters]
 }
 
 export default Reducer

@@ -45,6 +45,7 @@ class SearchContainer extends Component {
           <ClearSearch/>
           <View style={{display: "inline-block", marginLeft: 5}}>
             <AndSearch/>
+            <NotSearch/>
           </View>
         </View>
       </View>
@@ -94,7 +95,7 @@ class AndSearchContainer extends Component {
     this.props.dispatch({type: "ADD_AND_TO_SEARCH_STRING"})
   }
   render = () => (
-    <Text onClick={this.clearSearch} style={{cursor: "pointer", borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray", borderLeft: "1px solid lightgray",borderRight: "1px solid lightgray", padding: 3, paddingLeft: 6, paddingRight: 6, userSelect: "none"}}>
+    <Text onClick={this.clearSearch} style={{cursor: "pointer", borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray", borderLeft: "1px solid lightgray", borderRight: "1px solid lightgray", padding: 3, paddingLeft: 6, paddingRight: 6, userSelect: "none"}}>
       and
     </Text>
   )
@@ -103,27 +104,15 @@ const AndSearch = connect(mapStateToProps)(AndSearchContainer)
 
 class NotSearchContainer extends Component {
   clearSearch = () => {
-    this.props.dispatch({type: "ADD_NOt_TO_SEARCH_STRING"})
+    this.props.dispatch({type: "ADD_NOT_TO_SEARCH_STRING"})
   }
   render = () => (
-    <Text onClick={this.clearSearch} style={{cursor: "pointer", borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray", borderLeft: "1px solid lightgray",borderRight: "1px solid lightgray", padding: 3, paddingLeft: 6, paddingRight: 6, userSelect: "none"}}>
+    <Text onClick={this.clearSearch} style={{cursor: "pointer", borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray", borderRight: "1px solid lightgray", padding: 3, paddingLeft: 6, paddingRight: 6, userSelect: "none"}}>
       not
     </Text>
   )
 }
-const ParenthesesSearch = connect(mapStateToProps)(NotSearchContainer)
-
-class NotSearchContainer extends Component {
-  clearSearch = () => {
-    this.props.dispatch({type: "ADD_NOt_TO_SEARCH_STRING"})
-  }
-  render = () => (
-    <Text onClick={this.clearSearch} style={{cursor: "pointer", borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray", borderLeft: "1px solid lightgray",borderRight: "1px solid lightgray", padding: 3, paddingLeft: 6, paddingRight: 6, userSelect: "none"}}>
-      not
-    </Text>
-  )
-}
-const ParenthesesSearch = connect(mapStateToProps)(ParenthesesSearchContainer)
+const NotSearch = connect(mapStateToProps)(NotSearchContainer)
 
 /* list of references */
 
@@ -138,7 +127,7 @@ class ReferenceListContainer extends Component {
     if (!this.props.references) return null
     return (
       <View>
-        {this.props.references.map(reference => (
+        {this.props.filteredReferences.map(reference => (
           <ReferenceCard key={reference.url} reference={reference}/>
         ))}
       </View>
@@ -249,6 +238,11 @@ class AuthorContainer extends Component {
 
   componentDidMount = () => {
     this.setState({dynamicStyle: this.state.normalStyle})
+    this.timeout = null
+  }
+
+  componentWillUnmount = () => {
+    clearTimeout(this.timeout)
   }
 
   onHover = () => {
@@ -258,7 +252,7 @@ class AuthorContainer extends Component {
   onClick = (event) => {
 
     this.setState({dynamicStyle: this.state.clickedStyle})
-    setTimeout(function() {
+    this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
     this.props.dispatch({type:"ADD_STRING_TO_SEARCH", string: this.props.children})
@@ -310,6 +304,11 @@ class TagContainer extends Component {
 
   componentDidMount = () => {
     this.setState({dynamicStyle: this.state.normalStyle})
+    this.timeout = null
+  }
+
+  componentWillUnmount = () => {
+    clearTimeout(this.timeout)
   }
 
   onHover = () => {
@@ -319,8 +318,8 @@ class TagContainer extends Component {
   onClick = (event) => {
 
     this.setState({dynamicStyle: this.state.clickedStyle})
-    setTimeout(function() {
-        this.setState({dynamicStyle: this.state.normalStyle})
+    this.timeout = setTimeout(function() {
+        this.setState({dynamicStyle: this.state.normalStyle})  
     }.bind(this), 100)
     this.props.dispatch({type:"ADD_STRING_TO_SEARCH", string: this.props.children})
     event.stopPropagation()
@@ -365,6 +364,11 @@ class Edit extends Component {
 
   componentDidMount = () => {
     this.setState({dynamicStyle: this.state.normalStyle})
+    this.timeout = null
+  }
+
+  componentWillUnmount = () => {
+    clearTimeout(this.timeout)
   }
 
   onHover = () => {
@@ -374,7 +378,7 @@ class Edit extends Component {
   onClick = (event) => {
 
     this.setState({dynamicStyle: this.state.clickedStyle})
-    setTimeout(function() {
+    this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
     event.stopPropagation()
@@ -407,6 +411,11 @@ class Sort extends Component {
 
   componentDidMount = () => {
     this.setState({dynamicStyle: this.state.normalStyle})
+    this.timeout = null
+  }
+
+  componentWillUnmount = () => {
+    clearTimeout(this.timeout)
   }
 
   onHover = () => {
@@ -415,7 +424,7 @@ class Sort extends Component {
     
   onClick = (event) => {
     this.setState({dynamicStyle: this.state.clickedStyle})
-    setTimeout(function() {
+    this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
     if (this.props.onClick) {
@@ -451,6 +460,7 @@ class Delete extends Component {
 
   componentDidMount = () => {
     this.setState({dynamicStyle: this.state.normalStyle})
+    this.timeout = null
   }
 
   onHover = () => {
@@ -459,7 +469,7 @@ class Delete extends Component {
     
   onClick = (event) => {
     this.setState({dynamicStyle: this.state.clickedStyle})
-    setTimeout(function() {
+    this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
     if (this.props.onClick) {
