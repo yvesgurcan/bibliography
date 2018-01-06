@@ -101,6 +101,30 @@ class AndSearchContainer extends Component {
 }
 const AndSearch = connect(mapStateToProps)(AndSearchContainer)
 
+class NotSearchContainer extends Component {
+  clearSearch = () => {
+    this.props.dispatch({type: "ADD_NOt_TO_SEARCH_STRING"})
+  }
+  render = () => (
+    <Text onClick={this.clearSearch} style={{cursor: "pointer", borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray", borderLeft: "1px solid lightgray",borderRight: "1px solid lightgray", padding: 3, paddingLeft: 6, paddingRight: 6, userSelect: "none"}}>
+      not
+    </Text>
+  )
+}
+const ParenthesesSearch = connect(mapStateToProps)(NotSearchContainer)
+
+class NotSearchContainer extends Component {
+  clearSearch = () => {
+    this.props.dispatch({type: "ADD_NOt_TO_SEARCH_STRING"})
+  }
+  render = () => (
+    <Text onClick={this.clearSearch} style={{cursor: "pointer", borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray", borderLeft: "1px solid lightgray",borderRight: "1px solid lightgray", padding: 3, paddingLeft: 6, paddingRight: 6, userSelect: "none"}}>
+      not
+    </Text>
+  )
+}
+const ParenthesesSearch = connect(mapStateToProps)(ParenthesesSearchContainer)
+
 /* list of references */
 
 class ReferenceListContainer extends Component {
