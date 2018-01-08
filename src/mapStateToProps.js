@@ -13,6 +13,8 @@ const mapStateToProps = (state, ownProps) => {
     return {
         ...state,
         ...ownProps,
+        variousAuthorsString: "various authors",
+        collectionString: "collection",
     }
 
 }

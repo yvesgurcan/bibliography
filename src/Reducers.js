@@ -29,11 +29,26 @@ function Reducer (state = initState, action) {
                         type: "book",
                         description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
                         url: "http://eloquentjavascript.net/",
-                        published: "",
                         added: "2018/01/04",
                         tags: ["JavaScript", "Front-End"],
 
-                    }
+                    },
+                    {
+                        name: "Doom",
+                        variousAuthors: true,
+                        description: "This is a collection of resources about the creation of the videogame Doom",
+                        collection: [
+                            {
+                                name: "Doom Source Code",
+                                url: "https://github.com/id-Software/DOOM",
+                                // type: "repository",
+                                // author: "id Software"
+                            },
+                        ],
+                        added: "2018/01/08",
+                        tags: ["Doom", "Videogames", "id Software"],
+
+                    },
                 ],
             }
             newState.filteredReferences = [...newState.references]
@@ -180,6 +195,9 @@ function Reducer (state = initState, action) {
 }
 
 function ExamineReferences(searchString, references) {
+    
+        // SEARCH FEATURE DEACTIVATED FOR NOW
+        return references
     
     searchString = searchString.toLowerCase()
 

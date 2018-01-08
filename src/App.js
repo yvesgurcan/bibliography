@@ -128,7 +128,7 @@ class ReferenceListContainer extends Component {
     return (
       <View>
         {this.props.filteredReferences.map(reference => (
-          <ReferenceCard key={reference.url} reference={reference}/>
+          <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference}/>
         ))}
       </View>
     )
@@ -157,11 +157,12 @@ class ReferenceCardContainer extends Component {
   }
 
   onHover = (event) => {
+    if (this.props.reference.collection) return null
     this.setState({dynamicStyle: this.state.hoverStyle})
   }
     
   onClick = (event) => {
-
+    if (this.props.reference.collection) return null
     this.setState({dynamicStyle: this.state.clickedStyle})
     setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
@@ -182,10 +183,11 @@ class ReferenceCardContainer extends Component {
     this.setState({dynamicStyle: this.state.normalStyle})
   }
 
-  render() {
+  render = () => {
     let reference = {...this.props.reference}
+    if (!reference) return null
     return (
-      <View style={{border: "1px solid lightgray", padding: 20}}>
+      <View style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
         <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
           <View>
             <Name>{reference.name}</Name>
@@ -194,12 +196,16 @@ class ReferenceCardContainer extends Component {
             </Text>
           </View>
           <Subtitle>{reference.subtitle}</Subtitle>
-          <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-            <Author>
+          <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
+            <Type reference={reference}>
+              {reference.type}
+            </Type>
+            <Author reference={reference}>
                 {reference.author}
             </Author>
-          </Text>
+          </View>
           <Description>{reference.description}</Description>
+          <Collection reference={reference}/>
         </View>
         <Tags>{reference.tags}</Tags>
       </View>
@@ -221,6 +227,58 @@ class Subtitle extends Component {
     <View style={{marginBottom: 5}}>{this.props.children}</View>
   )
 }
+
+class TypeContainer extends Component {
+  
+    state = {
+      normalStyle: {
+        color: "steelblue"
+      },
+      hoverStyle: {
+        color: "navy"
+      },
+      clickedStyle: {
+        color: "lightskyblue"
+      }
+    }
+  
+    componentDidMount = () => {
+      this.setState({dynamicStyle: this.state.normalStyle})
+      this.timeout = null
+    }
+  
+    componentWillUnmount = () => {
+      clearTimeout(this.timeout)
+    }
+  
+    onHover = () => {
+      this.setState({dynamicStyle: this.state.hoverStyle})
+    }
+      
+    onClick = (event) => {
+  
+      this.setState({dynamicStyle: this.state.clickedStyle})
+      this.timeout = setTimeout(function() {
+          this.setState({dynamicStyle: this.state.normalStyle})
+      }.bind(this), 100)
+      this.props.dispatch({type:"ADD_STRING_TO_SEARCH", string: this.props.children || this.props.collectionString})
+      event.stopPropagation()
+    }
+  
+    onMouseOut = () => {
+      this.setState({dynamicStyle: this.state.normalStyle})
+    }
+    
+    render = () => {
+      if (!this.props.children && (!this.props.isItem && !this.props.reference.collection)) return null
+      return (
+        <Text style={{fontWeight: this.props.isItem ? null : "bold"}}>
+          <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children || (!this.props.isItem && this.props.reference.collection ? this.props.collectionString : null)} </Text>
+      </Text>
+      )
+    }
+  }
+  const Type = connect(mapStateToProps)(TypeContainer)
 
 class AuthorContainer extends Component {
 
@@ -263,17 +321,53 @@ class AuthorContainer extends Component {
     this.setState({dynamicStyle: this.state.normalStyle})
   }
   
-  render = () => (
-    <View style={{fontWeight: "bold"}}>
-      By <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children}</Text>
-    </View>
-  )
+  render = () => {
+    if (!this.props.children && !this.props.isItem && !this.props.reference.variousAuthors) return null
+    return (
+      <Text style={{fontWeight: this.props.isItem ? null : "bold"}}>
+      by <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children || (!this.props.isItem && this.props.reference.variousAuthors ? this.props.variousAuthorsString : null)}</Text>
+    </Text>
+    )
+  }
 }
 const Author = connect(mapStateToProps)(AuthorContainer)
 
 class Description extends Component {
   render = () => (
     <View style={{marginTop: 8}}>{this.props.children}</View>
+  )
+}
+
+class CollectionContainer extends Component {
+  render = () => {
+    if (!this.props.reference.collection) return null
+    return (
+      <View>
+        {
+          this.props.reference.collection.map(item => (
+            <IndividualCollectionItem key={item.url || item.name} item={item} />
+          ))
+        }
+      </View>
+    )
+  }
+}
+const Collection = connect(mapStateToProps)(CollectionContainer)
+
+class IndividualCollectionItem extends Component {
+  render = () => (
+    <OrderedListem>
+      <ListItem>
+        <Link href={this.props.item.url} target="_blank">{this.props.item.name}</Link>
+        {" "}
+        <Text>
+          (
+          <Type isItem>{this.props.item.type}</Type>
+          <Author isItem>{this.props.item.author}</Author>
+          )
+        </Text>
+        </ListItem>
+    </OrderedListem>
   )
 }
 
@@ -500,6 +594,24 @@ class View extends Component {
 class Text extends Component {
   render = () => (
     <span {...this.props}>{this.props.children}</span>
+  )
+}
+
+class Link extends Component {
+  render = () => (
+    <a href={this.props.href} target={this.props.target}>{this.props.children}</a>
+  )
+}
+
+class OrderedListem extends Component {
+  render = () => (
+    <ol>{this.props.children}</ol>
+  )
+}
+
+class ListItem extends Component {
+  render = () => (
+    <li>{this.props.children}</li>
   )
 }
 
