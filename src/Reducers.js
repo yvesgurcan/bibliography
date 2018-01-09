@@ -83,13 +83,16 @@ function Reducer (state = initState, action) {
             break
         
         case "SAVE_CHANGES":
+            let newFeedback = state.feedback
             let newReferences = [...state.references]
             let editReference = newReferences.filter(ref => ref.url === action.url)
             if (editReference.length === 0) {
+                newFeedback = "The item could not be found."
             }
             editReference[0][action.name] = action.value
             newState = {
                 ...state,
+                feedback: newFeedback,
                 references: [...newReferences]
             }
             break
