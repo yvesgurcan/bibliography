@@ -22,6 +22,7 @@ function Reducer (state = initState, action) {
         case "MOCK_DATA":
             newState = {
                 ...state,
+                allowEdit: true,
                 references: [
                     {
                         name: "Eloquent Javascript",
@@ -41,8 +42,18 @@ function Reducer (state = initState, action) {
                             {
                                 name: "Doom Source Code",
                                 url: "https://github.com/id-Software/DOOM",
-                                // type: "repository",
-                                // author: "id Software"
+                                type: "repository",
+                                author: "id Software"
+                            },
+                            {
+                                name: "TCRF Page for Doom",
+                                url: "https://tcrf.net/Doom_(PC,_1993)",
+                                type: "wiki",
+                            },
+                            {
+                                name: "TCRF Page for Doom II",
+                                url: "https://tcrf.net/Doom_II:_Hell_on_Earth_(PC)",
+                                type: "wiki",
                             },
                         ],
                         added: "2018/01/08",
