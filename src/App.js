@@ -186,6 +186,7 @@ class ReferenceCardContainer extends Component {
   handleEdit = () => {
     if (this.state.editMode) {
       this.setState({editMode: false})
+      this.props.dispatch({type: "CLEANUP", url: this.props.reference.url})
     }
     else {
       if (!this.props.allowEdit) {
@@ -207,15 +208,15 @@ class ReferenceCardContainer extends Component {
           <View>
             <Name>{reference.name}</Name>
             <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-              <Functionalities reference={reference} handleEdit={this.handleEdit}/>
+              <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit}/>
             </Text>
           </View>
-          <Subtitle editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
+          <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
           <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-            <Type reference={reference}>
+            <Type editMode={this.state.editMode} reference={reference}>
               {reference.type}
             </Type>
-            <Author reference={reference}>
+            <Author editMode={this.state.editMode} reference={reference}>
                 {reference.author}
             </Author>
           </View>
@@ -237,13 +238,18 @@ class Name extends Component {
   )
 }
 
-class Subtitle extends Component {
+class SubtitleContainer extends Component {
+
+  saveChange = (input) => {
+    this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: input.value})
+  }
+
   render = () => {
     if (this.props.editMode) {
       return (
         <View>
           <Label>Subtitle:</Label>
-          <TextInput />
+          <TextInput name="subtitle" value={this.props.children} onChange={this.saveChange} />
         </View>
       )
     }
@@ -252,6 +258,7 @@ class Subtitle extends Component {
     )
   }
 }
+const Subtitle = connect(mapStateToProps)(SubtitleContainer)
 
 class TypeContainer extends Component {
   
@@ -294,7 +301,19 @@ class TypeContainer extends Component {
       this.setState({dynamicStyle: this.state.normalStyle})
     }
     
+    saveChange = (input) => {
+      this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: input.value})
+    }
+
     render = () => {
+      if (this.props.editMode) {
+        return (
+          <View>
+            <Label>Type:</Label>
+            <TextInput name="type" value={this.props.children} onChange={this.saveChange} />
+          </View>
+        )
+      }
       if (!this.props.children && (!this.props.isItem && !this.props.reference.collection)) return null
       if (!this.props.children && this.props.isItem) return null
       return (
@@ -347,12 +366,30 @@ class AuthorContainer extends Component {
     this.setState({dynamicStyle: this.state.normalStyle})
   }
   
+  saveChange = (input) => {
+    let value = input.value
+    if (input.type === "checkbox") {
+      value = input.checked
+    }
+    this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: value})
+  }
+
   render = () => {
+    var reference = this.props.reference
+    if (this.props.editMode) {
+      return (
+        <View>
+          <Label>Author:</Label>
+          <TextInput name="author" hidden={reference.variousAuthors} name="author" value={this.props.children} onChange={this.saveChange} />
+          <Checkbox name="variousAuthors" value={reference.variousAuthors} onChange={this.saveChange}>Various authors</Checkbox>
+        </View>
+      )
+    }
     if (!this.props.children && !this.props.isItem && !this.props.reference.variousAuthors) return null
     if (!this.props.children && this.props.isItem) return null
     return (
       <Text style={{fontWeight: this.props.isItem ? null : "bold"}}>
-      by <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children || (!this.props.isItem && this.props.reference.variousAuthors ? this.props.variousAuthorsString : null)}</Text>
+      by <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children || (!this.props.isItem && reference.variousAuthors ? this.props.variousAuthorsString : null)}</Text>
     </Text>
     )
   }
@@ -468,7 +505,7 @@ class Functionalities extends Component {
 
   render = () => (
     <Text style={{fontSize: "80%", fontWeight: "bold", color: "steelblue", textDecoration: "underline", cursor: "pointer", userSelect: "none", height: "100%"}}>
-      <Edit reference={this.props.reference} handleEdit={this.props.handleEdit}/>
+      <Edit reference={this.props.reference} editMode={this.props.editMode} handleEdit={this.props.handleEdit}/>
       <Sort reference={this.props.reference}/>
       <Delete reference={this.props.reference}/>
     </Text>
@@ -518,7 +555,7 @@ class Edit extends Component {
 
   render = () => (
     <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{marginRight: 5, ...this.state.dynamicStyle}}>
-      Edit
+      {this.props.editMode ? <Text>Done</Text> : <Text>Edit</Text>}
     </Text>
   )
 }
@@ -656,9 +693,40 @@ class Label extends Component {
 }
 
 class TextInput extends Component {
+  onChange = (input) => {
+    if (!this.props.onChange) {
+      console.error("TextInput '" + this.props.name + "' does not have an onChange prop.")
+      return null
+    }
+    let alteredInput = input.target
+    alteredInput.type = "text"
+    this.props.onChange(alteredInput)
+  }
   render = () => (
-    <input {...this.props} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
+    <input {...this.props} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
   )
+}
+
+class Checkbox extends Component {
+  onChange = (input) => {
+    if (!this.props.onChange) {
+      console.error("Checkbox '" + this.props.name + "' does not have an onChange prop.")
+      return null
+    }
+    let alteredInput = input.target
+    alteredInput.type = "checkbox"
+    this.props.onChange(alteredInput)
+  }
+  render = () => {
+    let props = {...this.props}
+    delete props.children
+    return (
+      <Text>
+        <input {...props} type="checkbox" onChange={this.onChange} checked={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
+        <Label>{this.props.children}</Label>
+      </Text>
+    )
+  }
 }
 
 export default AppContainer

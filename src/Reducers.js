@@ -9,15 +9,22 @@ function Reducer (state = initState, action) {
 
     let newState = {...state}
 
+    if (action.type === "INIT") {
+        return {...initState}
+    }
+
     let newHistory = []
     let newIndex = []
     let filteredReferences = []
+    let newReferences = []
+    if (state.references) {
+        newReferences = [...state.references]        
+    }
+    let editReference = []
+    let refIndex = null
+    let newFeedback = state.feedback
 
     switch (action.type) {
-
-        case "INIT":
-            newState = {...initState}
-            break
 
         case "MOCK_DATA":
             newState = {
@@ -26,6 +33,7 @@ function Reducer (state = initState, action) {
                 references: [
                     {
                         name: "Eloquent Javascript",
+                        subtitle: "test",
                         author: "Marijn Haverbeke",
                         type: "book",
                         description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
@@ -75,7 +83,7 @@ function Reducer (state = initState, action) {
             // TODO API
             break
         
-        case "AUTHORIZED"
+        case "AUTHORIZED":
             newState = {
                 ...state,
                 allowEdit: true,
@@ -83,19 +91,64 @@ function Reducer (state = initState, action) {
             break
         
         case "SAVE_CHANGES":
-            let newFeedback = state.feedback
-            let newReferences = [...state.references]
-            let editReference = newReferences.filter(ref => ref.url === action.url)
-            if (editReference.length === 0) {
+            // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
                 newFeedback = "The item could not be found."
             }
+
+            // modify the reference
             editReference[0][action.name] = action.value
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
             newState = {
                 ...state,
                 feedback: newFeedback,
                 references: [...newReferences]
             }
             break
+
+        case "CLEANUP":
+
+            // find the reference in the list
+            debugger
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            // silently fail
+            if (refIndex === null) {
+                return newState
+            }
+
+            // necessary adjustments
+            if (editReference[0].variousAuthors) {
+                editReference[0].author = undefined
+            }
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                references: [...newReferences]
+            }
+
+            break
+
         // search
             
         case "UPDATE_SEARCH_STRING":
