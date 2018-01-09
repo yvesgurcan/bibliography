@@ -65,6 +65,36 @@ function Reducer (state = initState, action) {
             newState.filteredReferences = [...newState.references]
             break
 
+        // api
+            
+        case "REQUEST_AUTHORIZATION":
+            newState = {
+                ...state,
+                credentials: {...action.credentials},
+            }
+            // TODO API
+            break
+        
+        case "AUTHORIZED"
+            newState = {
+                ...state,
+                allowEdit: true,
+            }
+            break
+        
+        case "SAVE_CHANGES":
+            let newReferences = [...state.references]
+            let editReference = newReferences.filter(ref => ref.url === action.url)
+            if (editReference.length === 0) {
+            }
+            editReference[0][action.name] = action.value
+            newState = {
+                ...state,
+                references: [...newReferences]
+            }
+            break
+        // search
+            
         case "UPDATE_SEARCH_STRING":
             newHistory = [...newState.search.history]
             newIndex = newState.search.index + 1
