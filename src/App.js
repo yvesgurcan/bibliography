@@ -9,11 +9,12 @@ import Author from "./Fields/Author"
 import {Collection} from "./Fields/Collection"
 import Description from "./Fields/Description"
 import Type from "./Fields/Type"
-import Name from "./Fields/Name"
+import {Name, NameEdit} from "./Fields/Name"
 import Subtitle from "./Fields/Subtitle"
-import {Tags, Tag} from "./Fields/Tags"
+import Tags from "./Fields/Tags"
 
 import Functionalities from "./CRUD/Functionalities"
+import Add from "./CRUD/Add"
 
 import Search from "./Search/Search"
 
@@ -56,6 +57,7 @@ class ReferenceListContainer extends Component {
     if (!this.props.references) return null
     return (
       <View>
+        <Add />
         {this.props.filteredReferences.map(reference => (
           <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference}/>
         ))}
@@ -116,16 +118,26 @@ class ReferenceCardContainer extends Component {
     if (this.state.editMode) {
       this.setState({editMode: false})
       this.props.dispatch({type: "CLEANUP", url: this.props.reference.url})
+      this.props.dispatch({type: "REMOVE_BACKUP", url: this.props.reference.url})
     }
     else {
       if (!this.props.allowEdit) {
         // TODO prompt for username and password
       }
       else {
-        this.setState({editMode: true})        
+        this.setState({editMode: true})
+        let backupReference = {...this.props.reference}
+        this.props.dispatch({type: "BACKUP_REFERENCE", reference: backupReference})
       }
     }
 
+  }
+
+  handleCancelEdit = () => {
+    if (this.state.editMode && this.props.allowEdit) {
+      this.setState({editMode: false})
+      this.props.dispatch({type: "CANCEL_EDIT", url: this.props.reference.url})
+    }
   }
 
   render = () => {
@@ -137,9 +149,10 @@ class ReferenceCardContainer extends Component {
           <View>
             <Name>{reference.name}</Name>
             <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-              <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit}/>
+              <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit}/>
             </Text>
           </View>
+          <NameEdit editMode={this.state.editMode} reference={reference}/>
           <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
           <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
             <Type editMode={this.state.editMode} reference={reference}>
@@ -149,10 +162,10 @@ class ReferenceCardContainer extends Component {
                 {reference.author}
             </Author>
           </View>
-          <Description editMode={this.state.editMode}>{reference.description}</Description>
-          <Collection reference={reference}/>
+          <Description editMode={this.state.editMode} reference={reference}>{reference.description}</Description>
+          <Collection editMode={this.state.editMode} reference={reference}/>
         </View>
-        <Tags>{reference.tags}</Tags>
+        <Tags editMode={this.state.editMode} reference={reference}>{reference.tags}</Tags>
       </View>
     )
   }

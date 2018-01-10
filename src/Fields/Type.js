@@ -53,11 +53,13 @@ class TypeContainer extends Component {
   }
 
   render = () => {
+    let reference = this.props.reference
     if (this.props.editMode) {
       return (
-        <View>
+        <View style={reference.collection && reference.collection.length > 0 ? {marginBottom: 10} : null}>
           <Label>Type:</Label>
-          <TextInput name="type" value={this.props.children} onChange={this.saveChange} />
+          {reference.collection && reference.collection.length > 0 ? <Text style={{fontStyle: "italic"}}>collection</Text> : <TextInput name="type" value={this.props.children} onChange={this.saveChange} />}
+
         </View>
       )
     }
@@ -65,7 +67,7 @@ class TypeContainer extends Component {
     if (!this.props.children && this.props.isItem) return null
     return (
       <Text style={{fontWeight: this.props.isItem ? null : "bold"}}>
-        <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children || (!this.props.isItem && this.props.reference.collection ? this.props.collectionString : null)}{!this.props.isItem ? " " : null}</Text>
+        <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children || (!this.props.isItem && reference.collection ? this.props.collectionString : null)}{!this.props.isItem ? " " : null}</Text>
     </Text>
     )
   }

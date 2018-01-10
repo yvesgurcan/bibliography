@@ -4,7 +4,6 @@ import mapStateToProps from "./../mapStateToProps"
 
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
-import Text from "./../Boilerplate/Text"
 import View from "./../Boilerplate/View"
 
 class SubtitleContainer extends Component {

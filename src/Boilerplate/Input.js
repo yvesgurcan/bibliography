@@ -9,7 +9,7 @@ export class TextInput extends Component {
       return null
     }
     let alteredInput = input.target
-    alteredInput.type = "textbox"
+    alteredInput.inputType = "textbox"
     this.props.onChange(alteredInput)
   }
   render = () => (
@@ -24,7 +24,7 @@ export class TextArea extends Component {
       return null
     }
     let alteredInput = input.target
-    alteredInput.type = "textarea"
+    alteredInput.inputType = "textarea"
     this.props.onChange(alteredInput)
   }
   render = () => (
@@ -39,7 +39,7 @@ export class Checkbox extends Component {
       return null
     }
     let alteredInput = input.target
-    alteredInput.type = "checkbox"
+    alteredInput.inputType = "checkbox"
     this.props.onChange(alteredInput)
   }
   render = () => {

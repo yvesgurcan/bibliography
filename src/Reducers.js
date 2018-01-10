@@ -21,6 +21,7 @@ function Reducer (state = initState, action) {
         newReferences = [...state.references]        
     }
     let editReference = []
+    let backupReference = []
     let refIndex = null
     let newFeedback = state.feedback
 
@@ -117,6 +118,126 @@ function Reducer (state = initState, action) {
             }
             break
 
+        case "ADD_TAG":
+            // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
+                newFeedback = "The item could not be found."
+            }
+
+            // modify the reference
+            if (!editReference[0].tags) {
+                editReference[0].tags = [""]
+            }
+            else {
+                editReference[0].tags = [...editReference[0].tags, ""]
+            }
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                feedback: newFeedback,
+                references: [...newReferences]
+            }
+            break
+
+        case "REMOVE_TAG":
+            // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
+                newFeedback = "The item could not be found."
+            }
+
+            // modify the reference
+            editReference[0].tags = [...editReference[0].tags]
+            editReference[0].tags.pop()
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                feedback: newFeedback,
+                references: [...newReferences]
+            }
+            break
+
+        case "ADD_COLLECTION_ITEM":
+            // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
+                newFeedback = "The item could not be found."
+            }
+
+            // modify the reference
+            if (!editReference[0].collection) {
+                editReference[0].collection = [""]
+            }
+            else {
+                editReference[0].collection = [...editReference[0].collection, {name: "", url: "", type: "", author: ""}]
+            }
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                feedback: newFeedback,
+                references: [...newReferences]
+            }
+            break
+
+        case "REMOVE_COLLECTION_ITEM":
+            // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
+                newFeedback = "The item could not be found."
+            }
+
+            // modify the reference
+            editReference[0].collection = [...editReference[0].collection]
+            editReference[0].collection.pop()
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                feedback: newFeedback,
+                references: [...newReferences]
+            }
+            break
+
         case "CLEANUP":
 
             // find the reference in the list
@@ -137,6 +258,14 @@ function Reducer (state = initState, action) {
             if (editReference[0].variousAuthors) {
                 editReference[0].author = undefined
             }
+            if (editReference[0].tags) {
+                let newTags = [...editReference[0].tags.filter(tag => (tag !== ""))]
+                editReference[0].tags = newTags
+            }
+            if (editReference[0].collection) {
+                let newCollection = [...editReference[0].collection.filter(collection => collection.url !== "" && collection.name !== "")]
+                editReference[0].collection = newCollection
+            }
 
             // put it back in the list
             newReferences[refIndex] = editReference[0]
@@ -146,6 +275,68 @@ function Reducer (state = initState, action) {
                 references: [...newReferences]
             }
 
+            break
+
+        case "BACKUP_REFERENCE":
+            let newBackup = [...state.referenceBackup || [], action.reference]
+            newState = {
+                ...state,
+                referenceBackup: [...newBackup]
+            }
+            break
+
+        case "REMOVE_BACKUP":
+
+            newBackup = [...state.referenceBackup.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return false
+                }
+                return true
+            })]
+
+
+            if (refIndex === null) {
+                newFeedback = "The item could not be found."
+            }
+
+            newState = {
+                ...state,
+                referenceBackup: [...newBackup],
+                feedback: newFeedback,
+            }
+            break
+
+        case "CANCEL_EDIT":
+            backupReference = [...state.referenceBackup.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })]
+
+            if (refIndex === null) {
+                newFeedback = "The item could not be found."
+            }
+
+            newReferences = [... state.references]
+            newReferences[refIndex] = {...backupReference[0]}
+
+            newBackup = [...state.referenceBackup.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    return false
+                }
+                return true
+            })]
+
+            newState = {
+                ...state,
+                references: [...newReferences],
+                filteredReferences: [...newReferences],
+                referenceBackup: [...newBackup],
+                feedback: newFeedback,
+            }
             break
 
         // search

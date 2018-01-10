@@ -4,15 +4,29 @@ import mapStateToProps from "./../mapStateToProps"
 
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
+import Minus from "./../Boilerplate/Minus"
+import Plus from "./../Boilerplate/Plus"
 import Text from "./../Boilerplate/Text"
 import View from "./../Boilerplate/View"
 
 class TagsContainer extends Component {
+
+  addTag = () => {
+    this.props.dispatch({type: "ADD_TAG", url: this.props.reference.url})
+  }
+
+  removeTag = () => {
+    this.props.dispatch({type: "REMOVE_TAG", url: this.props.reference.url})
+  }
+
   render() {
     if (!this.props.children) return null
+    let reference = this.props.reference
     return (
       <View style={{marginTop: 8}}>
-        {this.props.children.map((tag, index) => (<Text key={tag}><Tag>{tag}</Tag>{this.props.children.length-1 === index ? null : ", "}</Text>))}
+        {this.props.editMode ? <Label>Tags:</Label> : null}
+        {this.props.editMode ? <Text><Plus onClick={this.addTag}/> <Minus hidden={!reference.tags || reference.tags.length === 0} reference={reference} onClick={this.removeTag}/> </Text> : null}
+        {this.props.children.map((tag, index) => (<Text key={index}><Tag editMode={this.props.editMode} reference={reference} index={index}>{tag}</Tag>{this.props.children.length-1 === index || this.props.editMode ? " " : ", "}</Text>))}
       </View>      
     )
   }
@@ -60,8 +74,26 @@ class TagContainer extends Component {
     this.setState({dynamicStyle: this.state.normalStyle})
   }
   
-  render = () => (
-    <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{cursor: "pointer", userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children}</Text>
-  )
+  saveChange = (input) => {
+    let reference = this.props.reference
+    let newTags = [...reference.tags]
+    newTags[this.props.index] = input.value
+    this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: newTags})
+  }
+
+  render = () => {
+    if (this.props.editMode) {
+      return (
+        <Text>
+          <TextInput name="tags" value={this.props.children} onChange={this.saveChange} />
+        </Text>
+      )
+    }
+    return (
+      <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{cursor: "pointer", userSelect: "none", ...this.state.dynamicStyle}}>{this.props.children}</Text>      
+    )
+  }
 }
 export const Tag = connect(mapStateToProps)(TagContainer)
+
+export default Tags

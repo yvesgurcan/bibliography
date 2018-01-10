@@ -40,7 +40,7 @@ class AuthorContainer extends Component {
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    this.props.dispatch({type:"ADD_STRING_TO_SEARCH", string: this.props.children})
+    this.props.dispatch({type: "ADD_STRING_TO_SEARCH", string: this.props.children})
     event.stopPropagation()
   }
 
@@ -50,7 +50,7 @@ class AuthorContainer extends Component {
   
   saveChange = (input) => {
     let value = input.value
-    if (input.type === "checkbox") {
+    if (input.inputType === "checkbox") {
       value = input.checked
     }
     this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: value})
