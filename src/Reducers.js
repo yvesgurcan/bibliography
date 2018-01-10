@@ -120,7 +120,6 @@ function Reducer (state = initState, action) {
         case "CLEANUP":
 
             // find the reference in the list
-            debugger
             editReference = newReferences.filter((ref, index) => {
                 if (ref.url === action.url) {
                     refIndex = index
