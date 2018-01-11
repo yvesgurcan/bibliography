@@ -9,7 +9,7 @@ import View from "./../Boilerplate/Text"
 class NameContainer extends Component {
   render = () => (
     <View>
-      <h2 style={{margin: 0, marginRight: 5, display: "inline-block"}}>{this.props.children}</h2>
+      <h2 style={{margin: 0, marginRight: 5, display: "inline-block"}}>{this.props.children || <Link>{this.props.url}</Link>}</h2>
     </View>
   )
 }
