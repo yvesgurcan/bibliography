@@ -74,6 +74,13 @@ function Reducer (state = initState, action) {
             newState.filteredReferences = [...newState.references]
             break
 
+        case "CURRENT_WIDTH":
+            newState = {
+                ...state,
+                width: action.width
+            }
+            break
+
         // api
             
         case "REQUEST_AUTHORIZATION":
@@ -91,6 +98,53 @@ function Reducer (state = initState, action) {
             }
             break
         
+        case "EDIT_NEW_REFERENCE_URL":
+            newState = {
+                ...state,
+                newReferenceUrl: action.url
+            }
+            break
+        
+        case "EDIT_NEW_REFERENCE_NAME":
+            newState = {
+                ...state,
+                newReferenceName: action.name
+            }
+            break
+
+        case "CREATE_REFERENCE":
+            let addedRef =  {url: state.newReferenceUrl, name: state.newReferenceName}
+            newState = {
+                ...state,
+                references: [...state.references, {...addedRef}],
+                filteredReferences: [...state.filteredReferences, {...addedRef}]
+            }
+            break
+
+        case "SAVE_URL_CHANGE":
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.oldUrl) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
+                newFeedback = "The item could not be found."
+            }
+
+            // modify the reference
+            editReference[0].newUrl = action.newUrl
+
+            newState = {
+                ...state,
+                feedback: newFeedback,
+                references: [...newReferences]
+            }
+
+            break
+
         case "SAVE_CHANGES":
             // find the reference in the list
             editReference = newReferences.filter((ref, index) => {
@@ -236,6 +290,36 @@ function Reducer (state = initState, action) {
                 feedback: newFeedback,
                 references: [...newReferences]
             }
+            break
+
+        case "SWAP_URLS":
+            // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            // silently fail
+            if (refIndex === null) {
+                return newState
+            }
+
+            if (editReference[0].newUrl) {
+                editReference[0].url = editReference[0].newUrl
+                editReference[0].newUrl = undefined
+            }
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                references: [...newReferences]
+            }
+
             break
 
         case "CLEANUP":

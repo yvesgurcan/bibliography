@@ -55,19 +55,19 @@ class CollectionContainer extends Component {
 }
 export const Collection = connect(mapStateToProps)(CollectionContainer)
 
-export class IndividualCollectionItem extends Component {
+export class IndividualCollectionItemContainer extends Component {
   render = () => {
     let item = this.props.item
     if (this.props.editMode) {
       return (
-        <View>
-          <TextInput name="name" placeholder="name" value={item.name} />
+        <View  style={{width: "100%", textAlign: "center"}}>
+          <TextInput name="name" placeholder="name" value={item.name} style={{width: this.props.width < 580 ? "100%" : "22%"}} />
           {" "}
-          <TextInput name="url" placeholder="url" value={item.url} />
+          <TextInput name="url" placeholder="url" value={item.url} style={{width: this.props.width < 580 ? "100%" : "22%"}} />
           {" "}
-          <TextInput name="type" placeholder="type" value={item.type} />
+          <TextInput name="type" placeholder="type" value={item.type} style={{width: this.props.width < 580 ? "100%" : "22%"}} />
           {" "}
-          <TextInput name="author" placeholder="author" value={item.author} />
+          <TextInput name="author" placeholder="author" value={item.author} style={{width: this.props.width < 580 ? "100%" : "22%"}} />
           <View hidden={this.props.index === this.props.total - 1} style={{border: "1px solid lightgray", marginTop: -6, marginBottom: 4}}/>
         </View>
       )
@@ -94,3 +94,4 @@ export class IndividualCollectionItem extends Component {
     )
   }
 }
+export const IndividualCollectionItem = connect(mapStateToProps)(IndividualCollectionItemContainer)

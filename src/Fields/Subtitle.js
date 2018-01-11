@@ -17,7 +17,7 @@ class SubtitleContainer extends Component {
       return (
         <View>
           <Label>Subtitle:</Label>
-          <TextInput name="subtitle" value={this.props.children} onChange={this.saveChange} />
+          <TextInput name="subtitle" value={this.props.children} onChange={this.saveChange} style={{width: "100%"}}/>
         </View>
       )
     }

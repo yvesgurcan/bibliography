@@ -4,7 +4,7 @@ import mapStateToProps from "./../mapStateToProps"
 
 import Text from "./../Boilerplate/Text"
 
-export class AddContainer extends Component {
+export class CreateContainer extends Component {
 
   state = {
     normalStyle: {
@@ -37,7 +37,7 @@ export class AddContainer extends Component {
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    this.props.handleAdd()
+    this.props.dispatch({type: "CREATE_REFERENCE"})
   }
 
   onMouseOut = () => {
@@ -46,10 +46,10 @@ export class AddContainer extends Component {
 
   render = () => (
     <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{fontSize: "80%", fontWeight: "bold", textDecoration: "underline", cursor: "pointer", userSelect: "none", margin: 8, marginRight: 5, ...this.state.dynamicStyle}}>
-      <Text>Add</Text>
+      <Text onClick={this.props.handleAdd}>Create</Text>
     </Text>
   )
 }
-export const Add = connect(mapStateToProps)(AddContainer)
+export const Create = connect(mapStateToProps)(CreateContainer)
 
-export default Add
+export default Create

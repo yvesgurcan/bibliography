@@ -19,18 +19,23 @@ class NameEditContainer extends Component {
 
   saveChange = (input) => {
     let value = input.value
-    if (input.inputType === "checkbox") {
-      value = input.checked
+    if (this.props.addMode) {
+      this.props.dispatch({type: "EDIT_NEW_REFERENCE_NAME", name: value})
     }
-    this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: value})
+    else {
+      if (input.inputType === "checkbox") {
+        value = input.checked
+      }
+      this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: value})  
+    }
   }
 
   render = () => {
-    if (!this.props.editMode) return null
+    if (!this.props.editMode && !this.props.addMode) return null
     return (
       <View>
           <Label>Name:</Label>
-          <TextInput name="name" onChange={this.saveChange} value={this.props.reference.name}/>
+          <TextInput name="name" onChange={this.saveChange} value={this.props.addMode ? this.props.newReferenceName : this.props.reference.name} style={{width: "100%"}}/>
       </View>
     )
   }

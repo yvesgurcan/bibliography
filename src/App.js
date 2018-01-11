@@ -8,13 +8,15 @@ import View from "./Boilerplate/View"
 import Author from "./Fields/Author"
 import {Collection} from "./Fields/Collection"
 import Description from "./Fields/Description"
-import Type from "./Fields/Type"
 import {Name, NameEdit} from "./Fields/Name"
 import Subtitle from "./Fields/Subtitle"
 import Tags from "./Fields/Tags"
+import Type from "./Fields/Type"
+import URL from "./Fields/URL"
 
 import Functionalities from "./CRUD/Functionalities"
 import Add from "./CRUD/Add"
+import Create from "./CRUD/Create"
 
 import Search from "./Search/Search"
 
@@ -35,6 +37,16 @@ class PageTitle extends Component {
 }
 
 class ListPage extends Component {
+
+  componentDidMount = () => {
+    this.updateWidth()
+    window.addEventListener("resize", this.updateWidth)
+  }
+
+  updateWidth = () => {
+    store.dispatch({type: "CURRENT_WIDTH", width: window.innerWidth})
+  }
+
   render = () => (
     <View>
       <PageTitle>A Programmer's Bibliography</PageTitle>
@@ -48,16 +60,35 @@ class ListPage extends Component {
 
 class ReferenceListContainer extends Component {
 
+  state = {
+    addMode: false
+  }
+
   componentDidMount = () => {
     store.dispatch({type: "INIT"})   
     store.dispatch({type: "MOCK_DATA"})    
+  }
+
+  handleAdd = () => {
+    if (this.state.addMode) {
+      this.setState({addMode: false})
+    }
+    else {
+      if (!this.props.allowEdit) {
+        // TODO prompt for username and password
+      }
+      else {
+        this.setState({addMode: true})
+      }
+    }
   }
 
   render() {
     if (!this.props.references) return null
     return (
       <View>
-        <Add />
+        <Add handleAdd={this.handleAdd} />
+        <NewReferenceCardContainer addMode={this.state.addMode}/>
         {this.props.filteredReferences.map(reference => (
           <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference}/>
         ))}
@@ -68,6 +99,22 @@ class ReferenceListContainer extends Component {
 const ReferenceList = connect(mapStateToProps)(ReferenceListContainer)
 
 /* individual references */
+
+class NewReferenceCardContainer extends Component {
+  render = () => {
+    if (!this.props.addMode) {
+      return null
+    }
+    return (
+      <View style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
+        <URL addMode={this.props.addMode} />
+        <NameEdit addMode={this.props.addMode} />
+        <Create />
+      </View>
+    )
+  }
+}
+const NewReferenceCard = connect(mapStateToProps)(NewReferenceCardContainer)
 
 class ReferenceCardContainer extends Component {
 
@@ -130,7 +177,6 @@ class ReferenceCardContainer extends Component {
         this.props.dispatch({type: "BACKUP_REFERENCE", reference: backupReference})
       }
     }
-
   }
 
   handleCancelEdit = () => {
@@ -141,8 +187,8 @@ class ReferenceCardContainer extends Component {
   }
 
   render = () => {
+    if (!this.props.reference) return null
     let reference = {...this.props.reference}
-    if (!reference) return null
     return (
       <View style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
         <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
@@ -151,6 +197,9 @@ class ReferenceCardContainer extends Component {
             <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
               <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit}/>
             </Text>
+          </View>
+          <View>
+            <URL editMode={this.state.editMode} reference={reference} />
           </View>
           <NameEdit editMode={this.state.editMode} reference={reference}/>
           <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>

@@ -58,7 +58,7 @@ class TypeContainer extends Component {
       return (
         <View style={reference.collection && reference.collection.length > 0 ? {marginBottom: 10} : null}>
           <Label>Type:</Label>
-          {reference.collection && reference.collection.length > 0 ? <Text style={{fontStyle: "italic"}}>collection</Text> : <TextInput name="type" value={this.props.children} onChange={this.saveChange} />}
+          {reference.collection && reference.collection.length > 0 ? <Text style={{fontStyle: "italic"}}>collection</Text> : <TextInput name="type" value={this.props.children} onChange={this.saveChange} style={{width: "100%"}} />}
 
         </View>
       )

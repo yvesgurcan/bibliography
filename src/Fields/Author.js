@@ -62,7 +62,7 @@ class AuthorContainer extends Component {
       return (
         <View>
           <Label>Author:</Label>
-          <TextInput name="author" hidden={reference.variousAuthors} value={this.props.children} onChange={this.saveChange} />
+          <TextInput name="author" hidden={reference.variousAuthors} value={this.props.children} onChange={this.saveChange} style={{width: "100%"}} />
           <Checkbox name="variousAuthors" value={reference.variousAuthors} onChange={this.saveChange}>Various authors</Checkbox>
         </View>
       )
