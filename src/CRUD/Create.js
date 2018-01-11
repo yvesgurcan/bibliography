@@ -45,7 +45,7 @@ export class CreateContainer extends Component {
   }
 
   render = () => (
-    <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{fontSize: "80%", fontWeight: "bold", textDecoration: "underline", cursor: "pointer", userSelect: "none", margin: 8, marginRight: 5, ...this.state.dynamicStyle}}>
+    <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{fontSize: "80%", fontWeight: "bold", textDecoration: "underline", cursor: "pointer", userSelect: "none", marginBottom: 8, marginRight: 5, ...this.state.dynamicStyle}}>
       <Text onClick={this.props.handleAdd}>Create</Text>
     </Text>
   )

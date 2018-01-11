@@ -17,6 +17,7 @@ import URL from "./Fields/URL"
 import Functionalities from "./CRUD/Functionalities"
 import Add from "./CRUD/Add"
 import Create from "./CRUD/Create"
+import Feedback from "./CRUD/Feedback"
 
 import Search from "./Search/Search"
 
@@ -49,6 +50,7 @@ class ListPage extends Component {
 
   render = () => (
     <View>
+      <Feedback />
       <PageTitle>A Programmer's Bibliography</PageTitle>
       <Search/>
       <ReferenceList/>

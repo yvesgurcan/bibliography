@@ -2,6 +2,10 @@ const initState = {
     search: {
         index: 0,
         history: [""],
+    },
+    feedback: {
+        message: "lol",
+        status: ""
     }
 }
 
@@ -23,7 +27,7 @@ function Reducer (state = initState, action) {
     let editReference = []
     let backupReference = []
     let refIndex = null
-    let newFeedback = state.feedback
+    let newFeedback = {...state.feedback}
 
     switch (action.type) {
 
@@ -113,12 +117,26 @@ function Reducer (state = initState, action) {
             break
 
         case "CREATE_REFERENCE":
-            let addedRef =  {url: state.newReferenceUrl, name: state.newReferenceName}
-            newState = {
-                ...state,
-                references: [...state.references, {...addedRef}],
-                filteredReferences: [...state.filteredReferences, {...addedRef}]
+            let addedRef =  {url: state.newReferenceUrl || "", name: state.newReferenceName || ""}
+
+            if (addedRef.url === "" || addedRef.name === "") {
+                newFeedback.status = "warning"
+                newFeedback.message = "Please enter a URL and a name to add a new reference."
+                newState = {
+                    ...state,
+                    feedback: {...newFeedback},
+                }
             }
+            else {
+                newFeedback = {}
+                newState = {
+                    ...state,
+                    feedback: {...newFeedback},
+                    references: [...state.references, {...addedRef}],
+                    filteredReferences: [...state.filteredReferences, {...addedRef}]
+                }    
+            }
+
             break
 
         case "SAVE_URL_CHANGE":
@@ -131,7 +149,8 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             // modify the reference
@@ -139,7 +158,7 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                feedback: newFeedback,
+                feedback: {...newFeedback},
                 references: [...newReferences]
             }
 
@@ -156,7 +175,8 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             // modify the reference
@@ -167,7 +187,7 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                feedback: newFeedback,
+                feedback: {...newFeedback},
                 references: [...newReferences]
             }
             break
@@ -183,7 +203,8 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             // modify the reference
@@ -199,7 +220,7 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                feedback: newFeedback,
+                feedback: {...newFeedback},
                 references: [...newReferences]
             }
             break
@@ -215,7 +236,8 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             // modify the reference
@@ -227,7 +249,7 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                feedback: newFeedback,
+                feedback: {...newFeedback},
                 references: [...newReferences]
             }
             break
@@ -243,7 +265,8 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             // modify the reference
@@ -259,7 +282,7 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                feedback: newFeedback,
+                feedback: {...newFeedback},
                 references: [...newReferences]
             }
             break
@@ -275,7 +298,8 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             // modify the reference
@@ -287,7 +311,7 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                feedback: newFeedback,
+                feedback: {...newFeedback},
                 references: [...newReferences]
             }
             break
@@ -381,13 +405,14 @@ function Reducer (state = initState, action) {
 
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             newState = {
                 ...state,
                 referenceBackup: [...newBackup],
-                feedback: newFeedback,
+                feedback: {...newFeedback},
             }
             break
 
@@ -401,7 +426,8 @@ function Reducer (state = initState, action) {
             })]
 
             if (refIndex === null) {
-                newFeedback = "The item could not be found."
+                newFeedback.status = "error"
+                newFeedback.message = "The item could not be found."
             }
 
             newReferences = [... state.references]
@@ -419,7 +445,7 @@ function Reducer (state = initState, action) {
                 references: [...newReferences],
                 filteredReferences: [...newReferences],
                 referenceBackup: [...newBackup],
-                feedback: newFeedback,
+                feedback: {...newFeedback},
             }
             break
 
