@@ -27,6 +27,7 @@ function Reducer (state = initState, action) {
 
     switch (action.type) {
 
+        case "GET_REFERENCES":
         case "MOCK_DATA":
             newState = {
                 ...state,
@@ -117,7 +118,7 @@ function Reducer (state = initState, action) {
 
             if (addedRef.url === "" || addedRef.name === "") {
                 newFeedback.status = "warning"
-                newFeedback.message = "Please enter a URL and a name to add a new reference."
+                newFeedback.message = "Please enter a valid URL to create a new reference."
                 newState = {
                     ...state,
                     feedback: {...newFeedback},
@@ -128,8 +129,8 @@ function Reducer (state = initState, action) {
                 newState = {
                     ...state,
                     feedback: {...newFeedback},
-                    references: [...state.references, {...addedRef}],
-                    filteredReferences: [...state.filteredReferences, {...addedRef}]
+                    references: [{...addedRef}, ...state.references],
+                    filteredReferences: [{...addedRef}, ...state.filteredReferences]
                 }    
             }
 

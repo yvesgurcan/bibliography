@@ -197,7 +197,7 @@ class ReferenceCardContainer extends Component {
       <View style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
         <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
           <View>
-            <Name>{reference.name}</Name>
+            <Name reference={reference}>{reference.name}</Name>
             <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
               <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit}/>
             </Text>
