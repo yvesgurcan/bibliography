@@ -43,7 +43,6 @@ class ListPageContainer extends Component {
   componentDidMount = () => {
     this.updateWidth()
     window.addEventListener("resize", this.updateWidth)
-    this.props.scrollToReference(window.location.hash)
   }
 
   updateWidth = () => {
@@ -71,7 +70,26 @@ class ReferenceListContainer extends Component {
 
   componentDidMount = () => {
     store.dispatch({type: "INIT"})   
-    store.dispatch({type: "GET_REFERENCES"})    
+    store.dispatch({type: "GET_REFERENCES"})
+  }
+
+  componentDidUpdate = () => {
+    if (this.props.references) {
+      let hash = this.props.lowerCase(window.location.hash.replace("#",""))
+      if (!this.props.hashtag) {
+        let id = this.props.matchReferenceId(hash)
+        if (id !== null) {
+          if (!document.getElementById(id)) return null
+          console.log("go!", id)
+          console.log(document.getElementById(id))
+          setTimeout(() => {
+            document.getElementById(id).scrollIntoView({ 
+                behavior: "smooth"
+            })
+          }, 500)
+        }
+      }
+    }
   }
 
   handleAdd = () => {
@@ -112,7 +130,7 @@ class NewReferenceCardContainer extends Component {
       return null
     }
     return (
-      <View style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
+      <View id="add" style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
         <URL addMode={this.props.addMode} />
         <NameEdit addMode={this.props.addMode} />
         <Create />
@@ -196,7 +214,7 @@ class ReferenceCardContainer extends Component {
     if (!this.props.reference) return null
     let reference = {...this.props.reference}
     return (
-      <View style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
+      <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.name)) || null} style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
         <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
           <View>
             <Name reference={reference}>{reference.name}</Name>

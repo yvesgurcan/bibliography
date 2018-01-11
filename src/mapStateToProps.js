@@ -6,20 +6,46 @@ export const store = createStore(
   {},
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )
-// const dispatch = store.dispatch
+
+const lowerCase = (string) => {
+    if (string) {
+        return String(string).toLowerCase()
+    }
+    return string
+}
+
+const removeDangerousCharacters = (string) => {
+    if (string) {
+        return String(string).replace(/[ '"]/g, "")
+    }
+    return string
+}
 
 const mapStateToProps = (state, ownProps) => {
 
     return {
         ...state,
         ...ownProps,
-        scrollToReference: (hashtag) => {
+        matchReferenceId: hashtag => {
             if (hashtag !== "") {
-                let hash = hashtag.replace("#","")
-                console.log(hash) 
+                store.dispatch({type: "SET_HASHTAG", hashtag: hashtag})
+                if (state.references) {
+                    let matchId = null
+                    let matchReference = state.references.filter(reference => {
+                        let id = lowerCase(removeDangerousCharacters(reference.name))
+                        if (id.indexOf(hashtag) > -1) {
+                            matchId = id
+                            return true
+                        }
+                        return false
+                    })
+                    return matchId
+                }
             }
             return null
         },
+        lowerCase: string => lowerCase(string),
+        removeDangerousCharacters: string => removeDangerousCharacters(string),
         variousAuthorsString: "various authors",
         collectionString: "collection",
     }

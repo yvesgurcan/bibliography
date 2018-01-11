@@ -46,7 +46,28 @@ function Reducer (state = initState, action) {
 
                     },
                     {
-                        name: "Doom",
+                        name: "Test",
+                        subtitle: "test",
+                        author: "Marijn Haverbeke",
+                        type: "book",
+                        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
+                        url: "http://eloquentjavascript.net/test",
+                        added: "2018/01/04",
+                        tags: ["JavaScript", "Front-End"],
+
+                    },
+                    {
+                        name: "Test2",
+                        subtitle: "test",
+                        author: "Marijn Haverbeke",
+                        type: "book",
+                        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
+                        url: "http://eloqsssuentjavascript.net/test",
+                        added: "2018/01/04",
+                        tags: ["JavaScript", "Front-End"],
+                    },
+                    {
+                        name: "Doom'\"",
                         variousAuthors: true,
                         description: "This is a collection of resources about the creation of the videogame Doom",
                         collection: [
@@ -87,6 +108,13 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 feedback: undefined,        
+            }
+            break
+
+        case "SET_HASHTAG":
+            newState = {
+                ...state,
+                hashtag: action.hashtag,        
             }
             break
 
