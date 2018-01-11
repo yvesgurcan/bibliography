@@ -37,11 +37,12 @@ class PageTitle extends Component {
   )
 }
 
-class ListPage extends Component {
+class ListPageContainer extends Component {
 
   componentDidMount = () => {
     this.updateWidth()
     window.addEventListener("resize", this.updateWidth)
+    this.props.scrollToReference(window.location.hash)
   }
 
   updateWidth = () => {
@@ -57,6 +58,7 @@ class ListPage extends Component {
     </View>
   )
 }
+const ListPage = connect(mapStateToProps)(ListPageContainer)
 
 /* list of references */
 

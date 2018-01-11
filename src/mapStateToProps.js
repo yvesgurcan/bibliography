@@ -13,6 +13,12 @@ const mapStateToProps = (state, ownProps) => {
     return {
         ...state,
         ...ownProps,
+        scrollToReference: (hashtag) => {
+            console.log(hashtag)
+            if (hashtag !== "") {
+            }
+            return null
+        },
         variousAuthorsString: "various authors",
         collectionString: "collection",
     }
