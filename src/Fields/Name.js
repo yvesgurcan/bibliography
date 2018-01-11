@@ -4,14 +4,17 @@ import mapStateToProps from "./../mapStateToProps"
 
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
+import Link from "./../Boilerplate/Link"
 import View from "./../Boilerplate/Text"
 
 class NameContainer extends Component {
-  render = () => (
-    <View>
-      <h2 style={{margin: 0, marginRight: 5, display: "inline-block"}}>{this.props.children || <Link>{this.props.url}</Link>}</h2>
-    </View>
-  )
+  render = () => {
+    return (
+      <View>
+        <h2 style={{margin: 0, marginRight: 5, display: "inline-block"}}>{this.props.children || <Link>{this.props.reference.url}</Link>}</h2>
+      </View>
+    )
+  }
 }
 export const Name = connect(mapStateToProps)(NameContainer)
 

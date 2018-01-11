@@ -14,8 +14,9 @@ const mapStateToProps = (state, ownProps) => {
         ...state,
         ...ownProps,
         scrollToReference: (hashtag) => {
-            console.log(hashtag)
             if (hashtag !== "") {
+                let hash = hashtag.replace("#","")
+                console.log(hash) 
             }
             return null
         },

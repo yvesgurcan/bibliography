@@ -32,7 +32,6 @@ export class CreateContainer extends Component {
   }
     
   onClick = (event) => {
-
     this.setState({dynamicStyle: this.state.clickedStyle})
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})

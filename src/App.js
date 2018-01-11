@@ -70,7 +70,7 @@ class ReferenceListContainer extends Component {
 
   componentDidMount = () => {
     store.dispatch({type: "INIT"})   
-    store.dispatch({type: "MOCK_DATA"})    
+    store.dispatch({type: "GET_REFERENCES"})    
   }
 
   handleAdd = () => {
@@ -92,7 +92,7 @@ class ReferenceListContainer extends Component {
     return (
       <View>
         <Add handleAdd={this.handleAdd} />
-        <NewReferenceCardContainer addMode={this.state.addMode}/>
+        <NewReferenceCard addMode={this.state.addMode}/>
         {this.props.filteredReferences.map(reference => (
           <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference}/>
         ))}

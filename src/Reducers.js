@@ -27,8 +27,9 @@ function Reducer (state = initState, action) {
 
     switch (action.type) {
 
+        case "GET_REFERENCES_REMOTELY_ONLY":
+            // falls through
         case "GET_REFERENCES":
-        case "MOCK_DATA":
             newState = {
                 ...state,
                 allowEdit: true,
@@ -82,6 +83,13 @@ function Reducer (state = initState, action) {
             }
             break
 
+        case "CLEAR_FEEDBACK":
+            newState = {
+                ...state,
+                feedback: undefined,        
+            }
+            break
+
         // api
             
         case "REQUEST_AUTHORIZATION":
@@ -116,7 +124,7 @@ function Reducer (state = initState, action) {
         case "CREATE_REFERENCE":
             let addedRef =  {url: state.newReferenceUrl || "", name: state.newReferenceName || ""}
 
-            if (addedRef.url === "" || addedRef.name === "") {
+            if (addedRef.url === "") {
                 newFeedback.status = "warning"
                 newFeedback.message = "Please enter a valid URL to create a new reference."
                 newState = {
