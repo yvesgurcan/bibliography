@@ -18,6 +18,7 @@ import Functionalities from "./CRUD/Functionalities"
 import Add from "./CRUD/Add"
 import Create from "./CRUD/Create"
 import Feedback from "./CRUD/Feedback"
+import Refresh from "./CRUD/Refresh"
 
 import Search from "./Search/Search"
 
@@ -91,6 +92,7 @@ class ReferenceListContainer extends Component {
     if (!this.props.references) return null
     return (
       <View>
+        <Refresh />
         <Add handleAdd={this.handleAdd} />
         <NewReferenceCard addMode={this.state.addMode}/>
         {this.props.filteredReferences.map(reference => (
