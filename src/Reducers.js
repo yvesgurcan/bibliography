@@ -3,10 +3,6 @@ const initState = {
         index: 0,
         history: [""],
     },
-    feedback: {
-        message: "lol",
-        status: ""
-    }
 }
 
 function Reducer (state = initState, action) {
