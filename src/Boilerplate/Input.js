@@ -1,8 +1,11 @@
 import React, { Component } from "react"
+import {connect} from "react-redux"
+import mapStateToProps from "./../mapStateToProps"
+
 import Label from "./Label"
 import Text from "./Text"
 
-export class TextInput extends Component {
+class TextInputContainer extends Component {
   onChange = (input) => {
     if (!this.props.onChange) {
       console.error("TextInput '" + this.props.name + "' does not have an onChange prop.")
@@ -13,11 +16,12 @@ export class TextInput extends Component {
     this.props.onChange(alteredInput)
   }
   render = () => (
-    <input {...this.props} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
+    <input {...this.props} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
   )
 }
+export const TextInput = connect(mapStateToProps)(TextInputContainer)
 
-export class TextArea extends Component {
+class TextAreaContainer extends Component {
   onChange = (input) => {
     if (!this.props.onChange) {
       console.error("TextArea '" + this.props.name + "' does not have an onChange prop.")
@@ -28,11 +32,12 @@ export class TextArea extends Component {
     this.props.onChange(alteredInput)
   }
   render = () => (
-    <textarea {...this.props} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...this.props.style}}/>
+    <textarea {...this.props} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...this.props.style}}/>
   )
 }
+export const TextArea = connect(mapStateToProps)(TextAreaContainer)
 
-export class Checkbox extends Component {
+class CheckboxContainer extends Component {
   onChange = (input) => {
     if (!this.props.onChange) {
       console.error("Checkbox '" + this.props.name + "' does not have an onChange prop.")
@@ -47,9 +52,10 @@ export class Checkbox extends Component {
     delete props.children
     return (
       <Text>
-        <input {...props} type="checkbox" onChange={this.onChange} checked={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
+        <input {...props} disabled={this.props.disabled || this.props.sortMode} type="checkbox" onChange={this.onChange} checked={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
         <Label>{this.props.children}</Label>
       </Text>
     )
   }
 }
+export const Checkbox = connect(mapStateToProps)(CheckboxContainer)

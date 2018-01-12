@@ -35,12 +35,12 @@ class ReferenceCardContainer extends Component {
   }
 
   onHover = (event) => {
-    if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted) return null
+    if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted || this.props.sortMode) return null
     this.setState({dynamicStyle: this.state.hoverStyle})
   }
     
   onClick = (event) => {
-    if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted) return null
+    if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted || this.props.sortMode) return null
     this.setState({dynamicStyle: this.state.clickedStyle})
     setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
@@ -63,6 +63,7 @@ class ReferenceCardContainer extends Component {
   }
 
   handleEdit = () => {
+    if (this.props.sortMode) return null
     if (this.state.editMode) {
       this.setState({editMode: false})
       this.props.dispatch({type: "CLEANUP", url: this.props.reference.url})
@@ -81,6 +82,7 @@ class ReferenceCardContainer extends Component {
   }
 
   handleCancelEdit = () => {
+    if (this.props.sortMode) return null
     if (this.state.editMode && this.props.allowEdit) {
       this.setState({editMode: false})
       this.props.dispatch({type: "CANCEL_EDIT", url: this.props.reference.url})
@@ -88,6 +90,7 @@ class ReferenceCardContainer extends Component {
   }
 
   handleDelete = () => {
+    if (this.props.sortMode) return null
     this.props.dispatch({type: "DELETE_REFERENCE_STAGE_1", url: this.props.reference.url})
   }
 
@@ -100,17 +103,18 @@ class ReferenceCardContainer extends Component {
   }
 
   handleSort = () => {
-      let reference = this.props.reference
-      let referenceId = this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null
-      this.props.dispatch({type: "SORT_MODE_ON", referenceId: referenceId})
-      this.props.addSortEventListener(referenceId)
+    if (this.props.sortMode) return null
+    let reference = this.props.reference
+    let referenceId = this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null
+    this.props.dispatch({type: "SORT_MODE_ON", referenceId: referenceId})
+    this.props.addSortEventListener(referenceId)
   }
 
   render = () => {
     if (!this.props.reference) return null
     let reference = {...this.props.reference}
     return (
-      <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={{background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
+      <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={{userSelect: this.props.sortMode ? "none" : null, background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
         <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
           <View hidden={!reference.deleted}>
               <Name reference={reference} style={{textDecoration: "line-through"}}>{reference.name}</Name>

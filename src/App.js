@@ -101,7 +101,7 @@ class ReferenceListContainer extends Component {
 
     referenceCard.style.position = "absolute"
     referenceCard.style.zIndex = 900
-    referenceCard.style.top = event.clientY + "px"
+    referenceCard.style.top = (event.clientY - 60) + "px"
     referenceCard.style.width = (document.getElementById("root").offsetWidth - 42) + "px"
 
   }
