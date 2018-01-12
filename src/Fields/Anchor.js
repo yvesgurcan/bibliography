@@ -5,21 +5,11 @@ import mapStateToProps from "./../mapStateToProps"
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
 import Link from "./../Boilerplate/Link"
-import Text from "./../Boilerplate/Text"
+import Small from "./../Boilerplate/Small"
 import View from "./../Boilerplate/View"
+import Text from "./../Boilerplate/Text"
 
-class NameContainer extends Component {
-  render = () => {
-    return (
-      <View style={{display: "inline-block"}}>
-        <h2 style={{margin: 0}}>{this.props.children || <Link>{this.props.reference.url}</Link>}</h2>
-      </View>
-    )
-  }
-}
-export const Name = connect(mapStateToProps)(NameContainer)
-
-class NameEditContainer extends Component {
+class AnchorEditContainer extends Component {
 
   saveChange = (input) => {
     let value = input.value
@@ -38,10 +28,13 @@ class NameEditContainer extends Component {
     if (!this.props.editMode && !this.props.addMode) return null
     return (
       <View>
-          <Label>Name:</Label>
-          <TextInput name="name" onChange={this.saveChange} value={this.props.addMode ? this.props.newReferenceName : this.props.reference.name} style={{width: "100%"}}/>
+          <Label>Anchor:</Label>
+          <TextInput name="name" onChange={this.saveChange} value={this.props.reference.anchor} style={{width: "100%"}}/>
+          <View><Small>Please note that anchors are not case sensitive. All uppercase characters are automatically replaced by their lowercase counterpart.</Small></View>
       </View>
     )
   }
 }
-export const NameEdit = connect(mapStateToProps)(NameEditContainer)
+export const AnchorEdit = connect(mapStateToProps)(AnchorEditContainer)
+
+export default AnchorEdit

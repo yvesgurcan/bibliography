@@ -5,6 +5,7 @@ import mapStateToProps, {store} from "./mapStateToProps"
 import Text from "./Boilerplate/Text"
 import View from "./Boilerplate/View"
 
+import AnchorEdit from "./Fields/Anchor"
 import Author from "./Fields/Author"
 import {Collection} from "./Fields/Collection"
 import Description from "./Fields/Description"
@@ -222,10 +223,9 @@ class ReferenceCardContainer extends Component {
               <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit}/>
             </Text>
           </View>
-          <View>
-            <URL editMode={this.state.editMode} reference={reference} />
-          </View>
+          <URL editMode={this.state.editMode} reference={reference} />
           <NameEdit editMode={this.state.editMode} reference={reference}/>
+          <AnchorEdit editMode={this.state.editMode} reference={reference}/>
           <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
           <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
             <Type editMode={this.state.editMode} reference={reference}>
