@@ -24,6 +24,7 @@ function Reducer (state = initState, action) {
     let backupReference = []
     let refIndex = null
     let newFeedback = {...state.feedback}
+    let referenceMatch = []
 
     switch (action.type) {
 
@@ -135,6 +136,22 @@ function Reducer (state = initState, action) {
             }
             break
         
+        // add a new reference
+
+        case "ADD_MODE_ON":
+            newState = {
+                ...state,
+                addMode: true,
+            }
+            break
+        
+         case "ADD_MODE_OFF":
+            newState = {
+                ...state,
+                addMode: false,
+            }
+            break
+
         case "EDIT_NEW_REFERENCE_URL":
             newState = {
                 ...state,
@@ -161,13 +178,34 @@ function Reducer (state = initState, action) {
                 }
             }
             else {
-                newFeedback = {}
-                newState = {
-                    ...state,
-                    feedback: {...newFeedback},
-                    references: [{...addedRef}, ...state.references],
-                    filteredReferences: [{...addedRef}, ...state.filteredReferences]
-                }    
+                referenceMatch = state.references.filter(ref => ref.url === addedRef.url)
+
+                if (referenceMatch.length > 0) {
+                    newFeedback = {
+                        status: "warning",
+                        message: "This URL is already in use for " + (referenceMatch[0].name ? " a reference named '" + referenceMatch[0].name + "'" : "an unnamed reference") + ". Please edit that reference or enter a different URL."
+                    }
+                    newState = {
+                        ...state,
+                        feedback: {...newFeedback},
+                    }
+                }
+                else {
+                    newFeedback = {
+                        status: "success",
+                        message: "New reference successfully created."
+                    }
+                    newState = {
+                        ...state,
+                        feedback: {...newFeedback},
+                        references: [{...addedRef}, ...state.references],
+                        filteredReferences: [{...addedRef}, ...state.filteredReferences],
+                        addMode: false,
+                        newReferenceUrl: undefined,
+                        newReferenceName: undefined,
+                    }   
+                }
+
             }
 
             break

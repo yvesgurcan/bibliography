@@ -8,13 +8,13 @@ export class CreateContainer extends Component {
 
   state = {
     normalStyle: {
-      color: "steelblue"
+      background: "steelblue"
     },
     hoverStyle: {
-      color: "navy"
+      background: "cornflowerblue"
     },
     clickedStyle: {
-      color: "lightskyblue"
+      background: "lightskyblue"
     }
   }
 
@@ -44,8 +44,8 @@ export class CreateContainer extends Component {
   }
 
   render = () => (
-    <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{fontSize: "80%", fontWeight: "bold", textDecoration: "underline", cursor: "pointer", userSelect: "none", marginBottom: 8, marginRight: 5, ...this.state.dynamicStyle}}>
-      <Text onClick={this.props.handleAdd}>Create</Text>
+    <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{display: "inline-block", cursor: "pointer", userSelect: "none", padding: 9, marginTop: 5, borderRadius: 5, color: "white", ...this.state.dynamicStyle}}>
+      Create
     </Text>
   )
 }

@@ -4,10 +4,8 @@ import mapStateToProps from "./../mapStateToProps"
 
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
-import Link from "./../Boilerplate/Link"
-import Small from "./../Boilerplate/Small"
+import SmallText from "./../Boilerplate/SmallText"
 import View from "./../Boilerplate/View"
-import Text from "./../Boilerplate/Text"
 
 class AnchorEditContainer extends Component {
 
@@ -25,12 +23,13 @@ class AnchorEditContainer extends Component {
   }
 
   render = () => {
-    if (!this.props.editMode && !this.props.addMode) return null
+    if (!this.props.editMode) return null
+    let reference = this.props.reference
     return (
-      <View>
+      <View style={{marginBottom: 10}}>
           <Label>Anchor:</Label>
-          <TextInput name="name" onChange={this.saveChange} value={this.props.reference.anchor} style={{width: "100%"}}/>
-          <View><Small>Please note that anchors are not case sensitive. All uppercase characters are automatically replaced by their lowercase counterpart.</Small></View>
+          <TextInput name="anchor" onChange={this.saveChange} value={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name))} style={{width: "100%", marginBottom: 0}}/>
+          <SmallText>Please note that anchors are not case sensitive. All uppercase characters are automatically replaced by their lowercase counterpart.</SmallText>
       </View>
     )
   }

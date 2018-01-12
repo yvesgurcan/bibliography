@@ -5,7 +5,6 @@ import mapStateToProps from "./../mapStateToProps"
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
 import Link from "./../Boilerplate/Link"
-import Text from "./../Boilerplate/Text"
 import View from "./../Boilerplate/View"
 
 class NameContainer extends Component {
@@ -23,7 +22,7 @@ class NameEditContainer extends Component {
 
   saveChange = (input) => {
     let value = input.value
-    if (this.props.addMode) {
+    if (this.props.addForm) {
       this.props.dispatch({type: "EDIT_NEW_REFERENCE_NAME", name: value})
     }
     else {
@@ -35,11 +34,11 @@ class NameEditContainer extends Component {
   }
 
   render = () => {
-    if (!this.props.editMode && !this.props.addMode) return null
+    if ((!this.props.addForm && !this.props.editMode) || (this.props.addForm && !this.props.addMode)) return null
     return (
       <View>
           <Label>Name:</Label>
-          <TextInput name="name" onChange={this.saveChange} value={this.props.addMode ? this.props.newReferenceName : this.props.reference.name} style={{width: "100%"}}/>
+          <TextInput name="name" onChange={this.saveChange} value={this.props.addForm ? this.props.newReferenceName : this.props.reference.name} style={{width: "100%"}}/>
       </View>
     )
   }

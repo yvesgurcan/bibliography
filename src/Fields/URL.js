@@ -11,7 +11,7 @@ class URLContainer extends Component {
   saveChange = (input) => {
     let value = input.value
 
-    if (this.props.addMode) {
+    if (this.props.addForm) {
       this.props.dispatch({type: "EDIT_NEW_REFERENCE_URL", url: value})
     }
     else {
@@ -24,16 +24,16 @@ class URLContainer extends Component {
   }
 
   swapUrl = (input) => {
-    if (this.props.addMode) return null
+    if (this.props.addForm) return null
     this.props.dispatch({type: "SWAP_URLS", url: this.props.reference.url})
   }
 
   render = () => {
-    if (!this.props.editMode && !this.props.addMode) return null
+    if ((!this.props.addForm && !this.props.editMode) || (this.props.addForm && !this.props.addMode)) return null
     return (
       <View>
           <Label>URL:</Label>
-          <TextInput name="url" onChange={this.saveChange} onBlur={this.swapUrl} value={this.props.addMode ? this.props.newReferenceUrl : this.props.reference.newUrl ||this.props.reference.url} style={{width: "100%"}}/>
+          <TextInput name="url" onChange={this.saveChange} onBlur={this.swapUrl} value={this.props.addForm ? this.props.newReferenceUrl : this.props.reference.newUrl || this.props.reference.url} style={{width: "100%"}}/>
       </View>
     )
   }

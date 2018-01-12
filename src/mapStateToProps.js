@@ -31,7 +31,7 @@ const mapStateToProps = (state, ownProps) => {
                 store.dispatch({type: "SET_HASHTAG", hashtag: hashtag})
                 if (state.references) {
                     let matchId = null
-                    let matchReference = state.references.filter(reference => {
+                    state.references.filter(reference => {
                         let id = lowerCase(removeDangerousCharacters(reference.name))
                         if (id.indexOf(hashtag) > -1) {
                             matchId = id

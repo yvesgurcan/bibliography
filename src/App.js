@@ -79,10 +79,12 @@ class ReferenceListContainer extends Component {
       let hash = this.props.lowerCase(window.location.hash.replace("#",""))
       if (!this.props.hashtag) {
         let id = this.props.matchReferenceId(hash)
+        if (hash === "new" || hash === "add" || hash === "create") {
+          id = "new"
+          this.props.dispatch({type: "ADD_MODE_ON"})
+        }
         if (id !== null) {
-          if (!document.getElementById(id)) return null
-          console.log("go!", id)
-          console.log(document.getElementById(id))
+          if (!document.getElementById(id) && id !== "new") return null
           setTimeout(() => {
             document.getElementById(id).scrollIntoView({ 
                 behavior: "smooth"
@@ -93,27 +95,13 @@ class ReferenceListContainer extends Component {
     }
   }
 
-  handleAdd = () => {
-    if (this.state.addMode) {
-      this.setState({addMode: false})
-    }
-    else {
-      if (!this.props.allowEdit) {
-        // TODO prompt for username and password
-      }
-      else {
-        this.setState({addMode: true})
-      }
-    }
-  }
-
   render() {
     if (!this.props.references) return null
     return (
       <View>
         <Refresh />
-        <Add handleAdd={this.handleAdd} />
-        <NewReferenceCard addMode={this.state.addMode}/>
+        <Add />
+        <NewReferenceCard/>
         {this.props.filteredReferences.map(reference => (
           <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference}/>
         ))}
@@ -131,9 +119,12 @@ class NewReferenceCardContainer extends Component {
       return null
     }
     return (
-      <View id="add" style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
-        <URL addMode={this.props.addMode} />
-        <NameEdit addMode={this.props.addMode} />
+      <View id="new" style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
+        <View style={{marginBottom: 5}}>
+          <Name>New Reference</Name>
+        </View>
+        <URL addForm />
+        <NameEdit addForm />
         <Create />
       </View>
     )

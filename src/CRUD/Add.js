@@ -37,11 +37,25 @@ export class AddContainer extends Component {
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    this.props.handleAdd()
+    this.handleAdd()
   }
 
   onMouseOut = () => {
     this.setState({dynamicStyle: this.state.normalStyle})
+  }
+
+  handleAdd = () => {
+    if (this.props.addMode) {
+      this.props.dispatch({type: "ADD_MODE_OFF"})
+    }
+    else {
+      if (!this.props.allowEdit) {
+        // TODO prompt for username and password
+      }
+      else {
+        this.props.dispatch({type: "ADD_MODE_ON"})
+      }
+    }
   }
 
   render = () => (

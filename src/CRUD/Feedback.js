@@ -18,7 +18,7 @@ export class FeedbackContainer extends Component {
     componentDidUpdate = () => {
         let feedback = this.props.feedback || {}
         if (feedback.message !== undefined) {
-            let timer = Math.max(5000, feedback.message.length * 100)
+            let timer = Math.max(5000, feedback.message.length * 80)
             if (this.timeout != null) {
                 clearTimeout(this.timeout)
             }
@@ -29,7 +29,7 @@ export class FeedbackContainer extends Component {
     }
 
     render = () => {
-        if (!this.props.feedback) {
+        if (!this.props.feedback || !this.props.feedback.message) {
             return null
         }
         let feedback = this.props.feedback || {}
