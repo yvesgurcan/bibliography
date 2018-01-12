@@ -5,6 +5,13 @@ const initState = {
     },
 }
 
+const ReferenceNotFound = () => {
+    return {
+        status: "error",
+        message: "The reference could not be found."
+    }
+}
+
 function Reducer (state = initState, action) {
 
     let newState = {...state}
@@ -36,6 +43,7 @@ function Reducer (state = initState, action) {
                 allowEdit: true,
                 references: [
                     {
+                        sort: 1,
                         name: "Eloquent Javascript",
                         subtitle: "test",
                         author: "Marijn Haverbeke",
@@ -44,9 +52,10 @@ function Reducer (state = initState, action) {
                         url: "http://eloquentjavascript.net/",
                         added: "2018/01/04",
                         tags: ["JavaScript", "Front-End"],
-
+                        deleted: true,
                     },
                     {
+                        sort: 2,
                         name: "Test",
                         subtitle: "test",
                         author: "Marijn Haverbeke",
@@ -58,6 +67,7 @@ function Reducer (state = initState, action) {
 
                     },
                     {
+                        sort: 3,
                         name: "Test2",
                         subtitle: "test",
                         author: "Marijn Haverbeke",
@@ -68,6 +78,7 @@ function Reducer (state = initState, action) {
                         tags: ["JavaScript", "Front-End"],
                     },
                     {
+                        sort: 4,
                         name: "Doom'\"",
                         variousAuthors: true,
                         description: "This is a collection of resources about the creation of the videogame Doom",
@@ -210,6 +221,8 @@ function Reducer (state = initState, action) {
 
             break
 
+        // edit reference
+
         case "SAVE_URL_CHANGE":
             editReference = newReferences.filter((ref, index) => {
                 if (ref.url === action.oldUrl) {
@@ -220,8 +233,7 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             // modify the reference
@@ -246,8 +258,7 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             // modify the reference
@@ -274,8 +285,7 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             // modify the reference
@@ -307,8 +317,7 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             // modify the reference
@@ -336,8 +345,7 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             // modify the reference
@@ -369,8 +377,7 @@ function Reducer (state = initState, action) {
             })
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             // modify the reference
@@ -476,8 +483,7 @@ function Reducer (state = initState, action) {
 
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             newState = {
@@ -497,8 +503,7 @@ function Reducer (state = initState, action) {
             })]
 
             if (refIndex === null) {
-                newFeedback.status = "error"
-                newFeedback.message = "The item could not be found."
+                newFeedback = ReferenceNotFound()
             }
 
             newReferences = [... state.references]
@@ -516,6 +521,79 @@ function Reducer (state = initState, action) {
                 references: [...newReferences],
                 filteredReferences: [...newReferences],
                 referenceBackup: [...newBackup],
+                feedback: {...newFeedback},
+            }
+            break
+
+        // delete
+
+        case "DELETE_REFERENCE_STAGE_1":
+            // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
+                newFeedback = ReferenceNotFound()
+            }
+
+            editReference[0].deleted = true
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                references: [...newReferences],
+                filteredReferences: [...newReferences],
+                feedback: {...newFeedback},
+            }
+            break
+        
+        case "DELETE_REFERENCE_STAGE_2":
+            // find the reference in the list
+            newReferences = [...state.references.filter((ref, index) => {
+                if (ref.url !== action.url) {
+                    return true
+                }
+                return false
+            })]
+
+            newState = {
+                ...state,
+                references: [...newReferences],
+                filteredReferences: [...newReferences],
+                feedback: {...newFeedback},
+            }
+            break
+        
+        case "CANCEL_DELETION":
+        // find the reference in the list
+            editReference = newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })
+
+            if (refIndex === null) {
+                newFeedback = ReferenceNotFound()
+            }
+
+            editReference[0].deleted = undefined
+
+            // put it back in the list
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                references: [...newReferences],
+                filteredReferences: [...newReferences],
                 feedback: {...newFeedback},
             }
             break

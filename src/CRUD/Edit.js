@@ -35,7 +35,7 @@ export class Edit extends Component {
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    this.props.handleEdit()
+    this.props.onClick()
     event.stopPropagation()
   }
 
@@ -83,7 +83,7 @@ export class CancelEdit extends Component {
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    this.props.handleCancelEdit()
+    this.props.onClick()
     event.stopPropagation()
   }
 
