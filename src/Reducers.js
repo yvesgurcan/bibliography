@@ -52,7 +52,6 @@ function Reducer (state = initState, action) {
                         url: "http://eloquentjavascript.net/",
                         added: "2018/01/04",
                         tags: ["JavaScript", "Front-End"],
-                        deleted: true,
                     },
                     {
                         sort: 2,
@@ -79,6 +78,7 @@ function Reducer (state = initState, action) {
                     },
                     {
                         sort: 4,
+                        anchor: "lol",
                         name: "Doom'\"",
                         variousAuthors: true,
                         description: "This is a collection of resources about the creation of the videogame Doom",
@@ -522,6 +522,16 @@ function Reducer (state = initState, action) {
                 filteredReferences: [...newReferences],
                 referenceBackup: [...newBackup],
                 feedback: {...newFeedback},
+            }
+            break
+
+        // sort
+
+        case "SORT_MODE_ON":
+            newState = {
+                ...state,
+                sortMode: true,
+                sortTarget: action.referenceId,
             }
             break
 

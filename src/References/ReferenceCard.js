@@ -50,6 +50,7 @@ class ReferenceCardContainer extends Component {
   }
 
   OpenUrl = () => {
+      if (this.props.sortMode) return null 
     window.open(this.props.reference.url, "_blank")
   }
 
@@ -99,14 +100,17 @@ class ReferenceCardContainer extends Component {
   }
 
   handleSort = () => {
-    console.log("TODO")
+      let reference = this.props.reference
+      let referenceId = this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null
+      this.props.dispatch({type: "SORT_MODE_ON", referenceId: referenceId})
+      this.props.addSortEventListener(referenceId)
   }
 
   render = () => {
     if (!this.props.reference) return null
     let reference = {...this.props.reference}
     return (
-      <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.name)) || null} style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
+      <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={{background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
         <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
           <View hidden={!reference.deleted}>
               <Name reference={reference} style={{textDecoration: "line-through"}}>{reference.name}</Name>
@@ -116,7 +120,7 @@ class ReferenceCardContainer extends Component {
             <View>
               <Name reference={reference}>{reference.name}</Name>
               <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-                <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit} handleDelete={this.handleDelete} handleSort={this.handleSort}/>
+                <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit} handleSort={this.handleSort} handleDelete={this.handleDelete}/>
               </Text>
             </View>
             <URL editMode={this.state.editMode} reference={reference} />

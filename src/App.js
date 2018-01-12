@@ -85,6 +85,27 @@ class ReferenceListContainer extends Component {
     }
   }
 
+  addSortEventListener = (referenceId) => {
+    let id = this.props.matchReferenceId(referenceId, true)
+    document.addEventListener("mousemove", (event) => this.dragReferenceCard(event, referenceId))
+  }
+
+  removeSortEventListener = (referenceId) => {
+    window.removeEventListener("mousemouve", this.dragReferenceCard, false)
+  }
+
+  dragReferenceCard = (event, referenceId) => {
+    console.log(event)
+    let referenceCard = document.getElementById(referenceId)
+    console.log(event.clientY, referenceCard.getBoundingClientRect().y)
+
+    referenceCard.style.position = "absolute"
+    referenceCard.style.zIndex = 900
+    referenceCard.style.top = event.clientY + "px"
+    referenceCard.style.width = (document.getElementById("root").offsetWidth - 42) + "px"
+
+  }
+
   render() {
     if (!this.props.references) return null
     return (
@@ -93,7 +114,7 @@ class ReferenceListContainer extends Component {
         <Add />
         <NewReferenceCard/>
         {this.props.filteredReferences.map(reference => (
-          <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference}/>
+          <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference} addSortEventListener={this.addSortEventListener}/>
         ))}
       </View>
     )
