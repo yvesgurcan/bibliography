@@ -15,9 +15,12 @@ class TextInputContainer extends Component {
     alteredInput.inputType = "textbox"
     this.props.onChange(alteredInput)
   }
-  render = () => (
-    <input {...this.props} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
-  )
+  render = () => {
+    let props = {...this.props}
+    return (
+      <input disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
+    )
+  }
 }
 export const TextInput = connect(mapStateToProps)(TextInputContainer)
 
@@ -31,9 +34,12 @@ class TextAreaContainer extends Component {
     alteredInput.inputType = "textarea"
     this.props.onChange(alteredInput)
   }
-  render = () => (
-    <textarea {...this.props} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...this.props.style}}/>
-  )
+  render = () => {
+    let props = {...this.props}
+    return (
+      <textarea disabled={props.disabled || props.sortMode} onChange={this.onChange} value={props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...props.style}}/>
+    )
+  }
 }
 export const TextArea = connect(mapStateToProps)(TextAreaContainer)
 
@@ -49,10 +55,9 @@ class CheckboxContainer extends Component {
   }
   render = () => {
     let props = {...this.props}
-    delete props.children
     return (
       <Text>
-        <input {...props} disabled={this.props.disabled || this.props.sortMode} type="checkbox" onChange={this.onChange} checked={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...this.props.style}}/>
+        <input disabled={props.disabled || props.sortMode} type="checkbox" onChange={this.onChange} checked={props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
         <Label>{this.props.children}</Label>
       </Text>
     )

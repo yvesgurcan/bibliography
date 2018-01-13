@@ -9,14 +9,14 @@ import View from "./../Boilerplate/View"
 
 class SearchContainer extends Component {
   onChange = (event) => {
-    this.props.dispatch({type: "UPDATE_SEARCH_STRING", string: event.target.value})
+    this.props.dispatch({type: "UPDATE_SEARCH_STRING", string: event.value})
   }
   render() {
     return (
       <View>
         <Label>Search:</Label>
         <View style={{display: "inline-block", marginBottom: 20, height: 28}}>
-          <TextInput value={this.props.search ? this.props.search.history[this.props.search.index] : ""} style={{minWidth: 250, height: 14.5}} onChange={this.onChange}/>
+          <TextInput value={this.props.search ? this.props.search.history[this.props.search.index] : ""} style={{background: "white", minWidth: 250, height: 14.5}} onChange={this.onChange}/>
           <PreviousSearch/>
           <NextSearch/>
           <ClearSearch/>

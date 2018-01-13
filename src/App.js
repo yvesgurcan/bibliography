@@ -99,6 +99,8 @@ class ReferenceListContainer extends Component {
     let referenceCard = document.getElementById(referenceId)
     console.log(event.clientY, referenceCard.getBoundingClientRect().y)
 
+    this.props.dispatch({type: "BACKUP_ORIGINAL_STYLE", style: referenceCard})
+
     referenceCard.style.position = "absolute"
     referenceCard.style.zIndex = 900
     referenceCard.style.top = (event.clientY - 60) + "px"

@@ -535,6 +535,12 @@ function Reducer (state = initState, action) {
             }
             break
 
+        case "BACKUP_ORIGINAL_STYLE":
+            newState = {
+                ...state,
+                style: action.style,
+            }
+
         // delete
 
         case "DELETE_REFERENCE_STAGE_1":
