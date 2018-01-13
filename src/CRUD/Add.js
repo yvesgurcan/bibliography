@@ -60,7 +60,7 @@ export class AddContainer extends Component {
 
   render = () => (
     <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{fontSize: "80%", fontWeight: "bold", textDecoration: "underline", cursor: "pointer", userSelect: "none", margin: 8, marginRight: 5, ...this.state.dynamicStyle}}>
-      <Text>Add</Text>
+      <Text>{this.props.addMode ? "Cancel" : "Add"}</Text>
     </Text>
   )
 }

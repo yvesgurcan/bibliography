@@ -159,7 +159,9 @@ function Reducer (state = initState, action) {
          case "ADD_MODE_OFF":
             newState = {
                 ...state,
-                addMode: false,
+                addMode: undefined,
+                newReferenceUrl: undefined,
+                newReferenceName: undefined,
             }
             break
 
