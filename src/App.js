@@ -86,10 +86,8 @@ class ReferenceListContainer extends Component {
   }
 
   addSortEventListener = (referenceId) => {
-    let id = this.props.matchReferenceId(referenceId, true)
     
     let referenceCard = document.getElementById(referenceId)    
-    let originalX = referenceCard.style.left
     referenceCard.style.left = (referenceCard.style.left.replace("px","") + 5) + "px"
 
     let positions = []
@@ -99,7 +97,7 @@ class ReferenceListContainer extends Component {
       return {id: referenceId.id, index: referenceId.index, y: document.getElementById(referenceId.id).offsetTop - 200}
     })
 
-    this.props.dispatch({type: "EVENT_LISTENER_ARGUMENTS", arguments: {referenceCard: referenceCard, positions: positions, originalX: originalX}})
+    this.props.dispatch({type: "EVENT_LISTENER_ARGUMENTS", arguments: {referenceCard: referenceCard, positions: positions}})
   }
 
   dragReferenceCard = (event) => {
@@ -109,7 +107,6 @@ class ReferenceListContainer extends Component {
     let args = this.props.eventListenerArgs
     let referenceCard = args.referenceCard
     let positions = args.positions
-    let originalX = args.originalX
 
     // reset placeholders visibility
     positions.map(refCard =>  document.getElementById("placeholder_" + refCard.id).style.display = "none")
@@ -127,8 +124,6 @@ class ReferenceListContainer extends Component {
     let absoluteY = event.pageY - 50
 
     // go through each reference and create an object which contains its id, its Y coordinate relative to the pointer, and its absolute Y coordinate
-    let above = []
-    let below = []
     let aboveRelative = []
     let belowRelative = []
     let processedPositions = positions.map((refCard, index) => {

@@ -44,7 +44,6 @@ function Reducer (state = initState, action) {
                 references: [
                     {
                         sort: 1,
-                        name: "Eloquent Javascript",
                         subtitle: "test",
                         author: "Marijn Haverbeke",
                         type: "book",

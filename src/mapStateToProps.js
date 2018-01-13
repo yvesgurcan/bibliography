@@ -27,7 +27,7 @@ const mapStateToProps = (state, ownProps) => {
         ...state,
         ...ownProps,
         matchReferenceId: (hashtag, doNotSave) => {
-            if (hashtag !== "") {
+            if (hashtag && hashtag !== "") {
                 if (!doNotSave) store.dispatch({type: "SET_HASHTAG", hashtag: hashtag})
                 if (state.references) {
                     let matchId = null
