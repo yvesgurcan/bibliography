@@ -106,7 +106,7 @@ class ReferenceCardContainer extends Component {
     if (this.props.sortMode) return null
     let reference = this.props.reference
     let referenceId = this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null
-    this.props.dispatch({type: "SORT_MODE_ON", referenceId: referenceId})
+    this.props.dispatch({type: "SORT_MODE_ON", referenceIndex: this.props.index})
     this.props.addSortEventListener(referenceId)
   }
 
@@ -115,7 +115,7 @@ class ReferenceCardContainer extends Component {
     let reference = {...this.props.reference}
     return (
       <View>
-        <View id={"placeholder_" + (this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null)} className="placeholder" />
+        <View id={"placeholder_" + (this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null)} style={{display: "none", height: "50px", marginTop: "10px", border: "3px dashed lightgray"}} />
         <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={{userSelect: this.props.sortMode ? "none" : null, background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
           <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
             <View hidden={!reference.deleted}>

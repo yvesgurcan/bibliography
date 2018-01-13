@@ -92,50 +92,114 @@ class ReferenceListContainer extends Component {
     console.log(referenceCard.style)
     this.props.dispatch({type: "BACKUP_ORIGINAL_STYLE", style: {...referenceCard.style}})
     
+    let originalX = referenceCard.style.left
     referenceCard.style.left = (referenceCard.style.left.replace("px","") + 5) + "px"
-    referenceCard.style.position = "absolute"
+    referenceCard.style.position = "fixed"
     referenceCard.style.zIndex = 900
     referenceCard.style.width = (document.getElementById("root").offsetWidth - 42) + "px"
     referenceCard.style.boxShadow = "6px 6px 2px 1px rgba(0, 0, 0, .2)"
 
     let positions = []
-    let referenceIds = this.props.filteredReferences.map(reference => this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null)
-    referenceIds = referenceIds.filter(refCard => refCard !== referenceId)
+    let referenceIds = this.props.filteredReferences.map((reference, index) => ({id: this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null, index: index - 1}))
+    referenceIds = referenceIds.filter(refCard => refCard.id !== referenceId)
     positions = referenceIds.map(referenceId => {
-      return {id: referenceId, y: document.getElementById(referenceId).getBoundingClientRect().top}
+      return {id: referenceId.id, index: referenceId.index, y: document.getElementById(referenceId.id).getBoundingClientRect().top}
     })
 
-    document.addEventListener("mousemove", (event) => this.dragReferenceCard(event, referenceCard, positions))
-    document.addEventListener("click", (event) => this.dropReferenceCard(event, referenceCard))
+    this.props.dispatch({type: "EVENT_LISTENER_ARGUMENTS", arguments: {referenceCard: referenceCard, positions: positions, originalX: originalX}})
+
+    document.addEventListener("mousemove", this.dragReferenceCard)
+    document.addEventListener("click", this.dropReferenceCard)
   }
 
-  dragReferenceCard = (event, referenceCard, positions) => {
-    let currentY = (event.clientY - 60)
+  dragReferenceCard = (event) => {
+
+    let args = this.props.eventListenerArgs
+    let referenceCard = args.referenceCard
+    let positions = args.positions
+    let originalX = args.originalX
+
+    // reset placeholders visibility
+    positions.map(refCard =>  document.getElementById("placeholder_" + refCard.id).style.display = "none")
+    document.getElementById("placeholder_last").style.display = "none"
+
+    // get pointer position
+    let currentY = (event.y - referenceCard.getBoundingClientRect().height/2)
+    let currentX = (event.x - referenceCard.getBoundingClientRect().width/2)
+
+    // move the center of the dragged reference card under the pointer
     referenceCard.style.top = currentY + "px"
+    referenceCard.style.left = currentX + "px"
 
-    let abovePositions = []
-    let above = positions.filter((refCard, index) => {
-      abovePositions = [...abovePositions, refCard.y]
-      return refCard.y < currentY
+    // set the absolute Y coordinate used to compare the other reference cards to
+    let absoluteY = event.pageY
+
+    // go through each reference and create an object which contains its id, its Y coordinate relative to the pointer, and its absolute Y coordinate
+    let above = []
+    let below = []
+    let aboveRelative = []
+    let belowRelative = []
+    let processedPositions = positions.map((refCard, index) => {
+      let relativePosition = refCard.y - absoluteY
+      let object = {id: refCard.id, index: refCard.index, relativeY: relativePosition, absoluteY: refCard.y}
+      // sort the reference cards based on their position compared to the pointer
+      if (relativePosition < 0) {
+        aboveRelative = [...aboveRelative, object.absoluteY]
+      }
+      else {
+        belowRelative = [...belowRelative, object.absoluteY]
+      }
+      return object
     })
-    let closestAbove = null//Math.min.apply(null, abovePositions)
 
-    let belowPositions = []
-    let below = positions.filter((refCard, index) => {
-      belowPositions = [...belowPositions, refCard.y]
-      return refCard.y > currentY
-    })
-    let closestBelow = null//Math.max.apply(null, belowPositions)
+    // find the relative Y coordinates that are surrounding the pointer
+    let closestAbove = Math.max.apply(null, aboveRelative)
+    let closestBelow = Math.min.apply(null, belowRelative)
 
-    console.log({y: currentY, above: above, below: below, closestAbove: closestAbove, closestBelow: closestBelow})
+    // get the reference card objects that correspond to the surrounding relative Y coordinates
+    let closestRefAbove = processedPositions.filter(refObject => refObject.absoluteY === closestAbove)
+    let closestRefBelow = processedPositions.filter(refObject => refObject.absoluteY === closestBelow)
+
+    let placeholderId = null
+    let placeholderIndex = 0
+    // the pointer is at the top of the page, there are no cards above it
+    if (closestRefAbove.length === 0) {
+      placeholderId = "placeholder_" + positions[0].id
+      placeholderIndex = positions[0].index
+    }
+    else {
+      placeholderId = "placeholder_" + closestRefAbove[0].id
+      placeholderIndex = closestRefAbove[0].index
+    }
+
+    if (closestRefBelow.length === 0) {
+      let lastRefCardObject = closestRefAbove[closestRefAbove.length - 1]
+      let lastRefCard = document.getElementById(lastRefCardObject.id)
+      let offsetToBottom = lastRefCard.getBoundingClientRect().height
+      if (absoluteY > lastRefCardObject.absoluteY + offsetToBottom) {
+        placeholderId = "placeholder_last"    
+        placeholderIndex = this.props.filteredReferences.length - 1    
+      }
+    }
+
+    // grab the DOM element
+    let placeholder = document.getElementById(placeholderId)
+
+    // show placeholder
+    placeholder.style.display = "block"
+    this.props.dispatch({type: "SET_PLACEHOLDER_INDEX", placeholderIndex: placeholderIndex})
 
   }
 
-  dropReferenceCard = (event, referenceCard) => {
-    console.log(event)
-    
+  dropReferenceCard = (event) => {
     document.removeEventListener("mousemouve", this.dragReferenceCard)
-    document.removeEventListener("click", this.dropReferenceCard)
+    document.removeEventListener("click", this.dropReferenceCar)
+
+    let args = this.props.eventListenerArgs
+    let referenceCard = args.referenceCard
+    
+    this.props.dispatch({type: "RESORT_TARGET"})
+
 
   }
 
@@ -146,9 +210,10 @@ class ReferenceListContainer extends Component {
         <Refresh />
         <Add />
         <NewReferenceCard/>
-        {this.props.filteredReferences.map(reference => (
-          <ReferenceCard key={reference.url || reference.name || reference.descriptions} reference={reference} addSortEventListener={this.addSortEventListener}/>
+        {this.props.filteredReferences.map((reference, index) => (
+          <ReferenceCard key={reference.url || reference.name || reference.descriptions} index={index} reference={reference} addSortEventListener={this.addSortEventListener}/>
         ))}
+        <View id={"placeholder_last"} style={{display: "none", height: "50px", marginTop: "10px", border: "3px dashed lightgray"}} />
       </View>
     )
   }

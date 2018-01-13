@@ -531,7 +531,14 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 sortMode: true,
-                sortTarget: action.referenceId,
+                sortIndex: action.referenceIndex,
+            }
+            break
+
+        case "EVENT_LISTENER_ARGUMENTS":
+            newState = {
+                ...state,
+                eventListenerArgs: {...action.arguments},
             }
             break
 
@@ -539,6 +546,38 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 cardStyle: action.style,
+            }
+            break
+        
+        case "SET_PLACEHOLDER_INDEX":
+            newState = {
+                ...state,
+                placeholderIndex: action.placeholderIndex,
+            }
+            break
+
+        case "RESORT_TARGET":
+
+            newReferences = [...state.filteredReferences]
+
+            let referenceToResort = {...newReferences[state.sortIndex]}
+
+            let adjustedIndex = 0
+            if (state.sortIndex > state.placeholderIndex) {
+                adjustedIndex = state.placeholderIndex - 1
+            }
+
+            let newNewReferences = [...newReferences.filter((ref, index) => index !== adjustedIndex)]
+
+            newReferences.splice(adjustedIndex + 1, 0, referenceToResort)
+
+            newState = {
+                ...state,
+                filteredReferences: [...newReferences],
+                placeholderIndex: undefined,
+                // sortMode: false,
+                sortTarget: undefined,
+                sortIndex: undefined,
             }
             break
 
