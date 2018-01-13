@@ -77,7 +77,7 @@ function Reducer (state = initState, action) {
                     },
                     {
                         sort: 4,
-                        anchor: "lol",
+                        url: "https://github.com/id-Software/DOOM",
                         name: "Doom'\"",
                         variousAuthors: true,
                         description: "This is a collection of resources about the creation of the videogame Doom",
@@ -482,56 +482,60 @@ function Reducer (state = initState, action) {
             break
 
         case "REMOVE_BACKUP":
-
-            newBackup = [...state.referenceBackup.filter((ref, index) => {
-                if (ref.url === action.url) {
-                    refIndex = index
-                    return false
-                }
-                return true
-            })]
-
-
-            if (refIndex === null) {
-                newFeedback = ReferenceNotFound()
-            }
-
             newState = {
                 ...state,
-                referenceBackup: [...newBackup],
-                feedback: {...newFeedback},
+                referenceBackup: undefined,
             }
             break
 
         case "CANCEL_EDIT":
-            backupReference = [...state.referenceBackup.filter((ref, index) => {
-                if (ref.url === action.url) {
-                    refIndex = index
-                    return true
-                }
-                return false
-            })]
 
-            if (refIndex === null) {
-                newFeedback = ReferenceNotFound()
+            if (state.referenceBackup.length === 0) {
+                newFeedback = {
+                    status: "error",
+                    message: "The reference could not be restored. No backup found. Changes to the reference were applied.",
+                }
+                newState = {
+                    ...state,
+                    feedback: {...newFeedback}
+                }
             }
-
-            newReferences = [... state.references]
-            newReferences[refIndex] = {...backupReference[0]}
-
-            newBackup = [...state.referenceBackup.filter((ref, index) => {
-                if (ref.url === action.url) {
-                    return false
+            else if (state.referenceBackup.length > 1) {
+                newFeedback = {
+                    status: "error",
+                    message: "More than one reference backup element was found. Changes to the reference were applied.",
                 }
-                return true
-            })]
+                newState = {
+                    ...state,
+                    feedback: {...newFeedback}
+                }
+            }
+            else {
 
-            newState = {
-                ...state,
-                references: [...newReferences],
-                filteredReferences: [...newReferences],
-                referenceBackup: [...newBackup],
-                feedback: {...newFeedback},
+                backupReference = [...state.referenceBackup]
+
+                newReferences = [...state.filteredReferences]
+                newReferences.map((ref, index) => {
+                    if (ref.url === action.url) {
+                        refIndex = index
+                        return true
+                    }
+                    return false
+                })
+                
+                if (refIndex === null) {
+                    newFeedback = ReferenceNotFound()
+                }
+
+                newReferences[refIndex] = {...backupReference[0]}
+
+                newState = {
+                    ...state,
+                    references: [...newReferences],
+                    filteredReferences: [...newReferences],
+                    referenceBackup: undefined,
+                    feedback: {...newFeedback},
+                }
             }
             break
 

@@ -53,7 +53,7 @@ class TypeContainer extends Component {
   }
 
   render = () => {
-    let reference = this.props.reference
+    let reference = {...this.props.reference}
     if (this.props.editMode) {
       return (
         <View style={reference.collection && reference.collection.length > 0 ? {marginBottom: 10} : null}>

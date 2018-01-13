@@ -29,11 +29,12 @@ class URLContainer extends Component {
   }
 
   render = () => {
-    if ((!this.props.addForm && !this.props.editMode) || (this.props.addForm && !this.props.addMode)) return null
+    let reference = {...this.props.reference}
+    if ((reference.collection && reference.collection.length > 0) || (!this.props.addForm && !this.props.editMode) || (this.props.addForm && !this.props.addMode)) return null
     return (
       <View>
           <Label>URL:</Label>
-          <TextInput name="url" onChange={this.saveChange} onBlur={this.swapUrl} value={this.props.addForm ? this.props.newReferenceUrl : this.props.reference.newUrl || this.props.reference.url} style={{width: "100%"}}/>
+          <TextInput name="url" onChange={this.saveChange} onBlur={this.swapUrl} value={this.props.addForm ? this.props.newReferenceUrl : reference.newUrl || reference.url} style={{width: "100%"}}/>
       </View>
     )
   }

@@ -18,7 +18,7 @@ class TextInputContainer extends Component {
   render = () => {
     let props = {...this.props}
     return (
-      <input name={this.props.name} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
+      <input name={this.props.name} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} placeholder={props.placeholder} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
     )
   }
 }
@@ -37,7 +37,7 @@ class TextAreaContainer extends Component {
   render = () => {
     let props = {...this.props}
     return (
-      <textarea name={this.props.name} disabled={props.disabled || props.sortMode} onChange={this.onChange} value={props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...props.style}}/>
+      <textarea name={this.props.name} disabled={props.disabled || props.sortMode} onChange={this.onChange} value={props.value || ""} placeholder={props.placeholder} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...props.style}}/>
     )
   }
 }
