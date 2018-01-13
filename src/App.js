@@ -88,31 +88,23 @@ class ReferenceListContainer extends Component {
   addSortEventListener = (referenceId) => {
     let id = this.props.matchReferenceId(referenceId, true)
     
-    let referenceCard = document.getElementById(referenceId)
-    console.log(referenceCard.style)
-    this.props.dispatch({type: "BACKUP_ORIGINAL_STYLE", style: {...referenceCard.style}})
-    
+    let referenceCard = document.getElementById(referenceId)    
     let originalX = referenceCard.style.left
     referenceCard.style.left = (referenceCard.style.left.replace("px","") + 5) + "px"
-    referenceCard.style.position = "fixed"
-    referenceCard.style.zIndex = 900
-    referenceCard.style.width = (document.getElementById("root").offsetWidth - 42) + "px"
-    referenceCard.style.boxShadow = "6px 6px 2px 1px rgba(0, 0, 0, .2)"
 
     let positions = []
     let referenceIds = this.props.filteredReferences.map((reference, index) => ({id: this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null, index: index - 1}))
     referenceIds = referenceIds.filter(refCard => refCard.id !== referenceId)
     positions = referenceIds.map(referenceId => {
-      return {id: referenceId.id, index: referenceId.index, y: document.getElementById(referenceId.id).getBoundingClientRect().top}
+      return {id: referenceId.id, index: referenceId.index, y: document.getElementById(referenceId.id).offsetTop - 200}
     })
 
     this.props.dispatch({type: "EVENT_LISTENER_ARGUMENTS", arguments: {referenceCard: referenceCard, positions: positions, originalX: originalX}})
-
-    document.addEventListener("mousemove", this.dragReferenceCard)
-    document.addEventListener("click", this.dropReferenceCard)
   }
 
   dragReferenceCard = (event) => {
+
+    if (!this.props.sortMode) return null
 
     let args = this.props.eventListenerArgs
     let referenceCard = args.referenceCard
@@ -124,15 +116,15 @@ class ReferenceListContainer extends Component {
     document.getElementById("placeholder_last").style.display = "none"
 
     // get pointer position
-    let currentY = (event.y - referenceCard.getBoundingClientRect().height/2)
-    let currentX = (event.x - referenceCard.getBoundingClientRect().width/2)
+    let currentY = (event.clientY - referenceCard.getBoundingClientRect().height/2)
+    let currentX = (event.clientX - referenceCard.getBoundingClientRect().width/2)
 
     // move the center of the dragged reference card under the pointer
     referenceCard.style.top = currentY + "px"
     referenceCard.style.left = currentX + "px"
 
     // set the absolute Y coordinate used to compare the other reference cards to
-    let absoluteY = event.pageY
+    let absoluteY = event.pageY - 50
 
     // go through each reference and create an object which contains its id, its Y coordinate relative to the pointer, and its absolute Y coordinate
     let above = []
@@ -151,6 +143,9 @@ class ReferenceListContainer extends Component {
       }
       return object
     })
+
+    console.log({y: absoluteY})
+    console.log(JSON.stringify(processedPositions))
 
     // find the relative Y coordinates that are surrounding the pointer
     let closestAbove = Math.max.apply(null, aboveRelative)
@@ -187,26 +182,27 @@ class ReferenceListContainer extends Component {
 
     // show placeholder
     placeholder.style.display = "block"
+    if (this.props.placeholderIndex === placeholderIndex) return null
     this.props.dispatch({type: "SET_PLACEHOLDER_INDEX", placeholderIndex: placeholderIndex})
 
   }
 
   dropReferenceCard = (event) => {
-    document.removeEventListener("mousemouve", this.dragReferenceCard)
-    document.removeEventListener("click", this.dropReferenceCar)
 
     let args = this.props.eventListenerArgs
-    let referenceCard = args.referenceCard
-    
+    let positions = args.positions
+
+    // reset placeholders visibility
+    positions.map(refCard =>  document.getElementById("placeholder_" + refCard.id).style.display = "none")
+    document.getElementById("placeholder_last").style.display = "none"
+
     this.props.dispatch({type: "RESORT_TARGET"})
-
-
   }
 
   render() {
     if (!this.props.references) return null
     return (
-      <View>
+      <View onMouseMove={this.dragReferenceCard} onClick={this.dropReferenceCard}>
         <Refresh />
         <Add />
         <NewReferenceCard/>

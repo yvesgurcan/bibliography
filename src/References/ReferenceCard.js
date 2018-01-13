@@ -116,7 +116,7 @@ class ReferenceCardContainer extends Component {
     return (
       <View>
         <View id={"placeholder_" + (this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null)} style={{display: "none", height: "50px", marginTop: "10px", border: "3px dashed lightgray"}} />
-        <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={{userSelect: this.props.sortMode ? "none" : null, background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
+        <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={this.props.sortMode && this.props.sortIndex === this.props.index ? {userSelect: "none", position: "fixed", zIndex: 900, background: "white", width: (document.getElementById("root").offsetWidth - 42), boxShadow: "6px 6px 2px 1px rgba(0, 0, 0, .2)", background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10} : {userSelect: this.props.sortMode ? "none" : null, background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
           <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
             <View hidden={!reference.deleted}>
                 <Name reference={reference} style={{textDecoration: "line-through"}}>{reference.name}</Name>
