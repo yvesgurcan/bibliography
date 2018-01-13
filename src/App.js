@@ -144,9 +144,6 @@ class ReferenceListContainer extends Component {
       return object
     })
 
-    console.log({y: absoluteY})
-    console.log(JSON.stringify(processedPositions))
-
     // find the relative Y coordinates that are surrounding the pointer
     let closestAbove = Math.max.apply(null, aboveRelative)
     let closestBelow = Math.min.apply(null, belowRelative)
