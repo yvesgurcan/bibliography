@@ -44,6 +44,7 @@ function Reducer (state = initState, action) {
                 references: [
                     {
                         sort: 1,
+                        name: "Eloquent Javascript",
                         subtitle: "test",
                         author: "Marijn Haverbeke",
                         type: "book",
@@ -59,19 +60,18 @@ function Reducer (state = initState, action) {
                         author: "Marijn Haverbeke",
                         type: "book",
                         description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-                        url: "http://eloquentjavascript.net/test",
+                        anchor: "ajax",
                         added: "2018/01/04",
                         tags: ["JavaScript", "Front-End"],
 
                     },
                     {
                         sort: 3,
-                        name: "Test2",
                         subtitle: "test",
                         author: "Marijn Haverbeke",
                         type: "book",
                         description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-                        url: "http://eloqsssuentjavascript.net/test",
+                        url: "http://google.com",
                         added: "2018/01/04",
                         tags: ["JavaScript", "Front-End"],
                     },

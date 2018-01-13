@@ -21,6 +21,10 @@ const removeDangerousCharacters = (string) => {
     return string
 }
 
+const getAnchorId = (reference) => (
+    removeDangerousCharacters(lowerCase(reference.anchor || reference.name || reference.url)) || null
+)
+
 const mapStateToProps = (state, ownProps) => {
 
     return {
@@ -32,7 +36,7 @@ const mapStateToProps = (state, ownProps) => {
                 if (state.references) {
                     let matchId = null
                     state.references.filter(reference => {
-                        let id = lowerCase(removeDangerousCharacters(reference.name))
+                        let id = getAnchorId(reference)
                         if (id.indexOf(hashtag) > -1) {
                             matchId = id
                             return true
@@ -45,6 +49,7 @@ const mapStateToProps = (state, ownProps) => {
             return null
         },
         lowerCase: string => lowerCase(string),
+        getAnchorId: (reference) => getAnchorId(reference),
         removeDangerousCharacters: string => removeDangerousCharacters(string),
         variousAuthorsString: "various authors",
         collectionString: "collection",

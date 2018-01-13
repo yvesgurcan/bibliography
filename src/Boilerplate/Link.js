@@ -27,6 +27,10 @@ export class Link extends Component {
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
+    if (this.props.onClick) {
+      this.props.onClick(event.target)
+      event.stopPropagation()
+    }
   }
 
   onMouseOut = () => {

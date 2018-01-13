@@ -4,8 +4,27 @@ import mapStateToProps from "./../mapStateToProps"
 
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
+import Link from "./../Boilerplate/Link"
 import SmallText from "./../Boilerplate/SmallText"
 import View from "./../Boilerplate/View"
+
+class AnchorContainer extends Component {
+  stopPropagation = (event) => {
+    event.stopPropagation()
+  }
+  render = () => {
+    if (this.props.editMode) return null
+    let reference = this.props.reference
+    let anchor = this.props.getAnchorId(reference)
+    if (!anchor) return null
+    return (
+      <View onClick={this.stopPropagation} style={{marginTop: 10}}>
+          <Link href={"#" + anchor} target={"_self"}>#{anchor}</Link>
+      </View>
+    )
+  }
+}
+export const Anchor = connect(mapStateToProps)(AnchorContainer)
 
 class AnchorEditContainer extends Component {
 
@@ -35,5 +54,3 @@ class AnchorEditContainer extends Component {
   }
 }
 export const AnchorEdit = connect(mapStateToProps)(AnchorEditContainer)
-
-export default AnchorEdit
