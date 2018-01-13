@@ -186,6 +186,8 @@ class ReferenceListContainer extends Component {
 
   dropReferenceCard = (event) => {
 
+    if (!this.props.sortMode) return null
+
     let args = this.props.eventListenerArgs
     let positions = args.positions
 

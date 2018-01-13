@@ -270,7 +270,8 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 feedback: {...newFeedback},
-                references: [...newReferences]
+                references: [...newReferences],
+                filteredReferences: [...newReferences],
             }
             break
 
