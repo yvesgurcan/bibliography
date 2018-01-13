@@ -114,34 +114,37 @@ class ReferenceCardContainer extends Component {
     if (!this.props.reference) return null
     let reference = {...this.props.reference}
     return (
-      <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={{userSelect: this.props.sortMode ? "none" : null, background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
-        <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
-          <View hidden={!reference.deleted}>
-              <Name reference={reference} style={{textDecoration: "line-through"}}>{reference.name}</Name>
-              <Functionalities reference={reference} handleDelete={this.handleDelete} handleConfirmDelete={this.handleConfirmDelete} handleCancelDelete={this.handleCancelDelete} />     
-          </View>
-          <View hidden={reference.deleted}>
-            <View>
-              <Name reference={reference}>{reference.name}</Name>
-              <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-                <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit} handleSort={this.handleSort} handleDelete={this.handleDelete}/>
-              </Text>
+      <View>
+        <View id={"placeholder_" + (this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null)} className="placeholder" />
+        <View id={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null} style={{userSelect: this.props.sortMode ? "none" : null, background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
+          <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
+            <View hidden={!reference.deleted}>
+                <Name reference={reference} style={{textDecoration: "line-through"}}>{reference.name}</Name>
+                <Functionalities reference={reference} handleDelete={this.handleDelete} handleConfirmDelete={this.handleConfirmDelete} handleCancelDelete={this.handleCancelDelete} />     
             </View>
-            <URL editMode={this.state.editMode} reference={reference} />
-            <NameEdit editMode={this.state.editMode} reference={reference}/>
-            <AnchorEdit editMode={this.state.editMode} reference={reference}/>
-            <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
-            <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-              <Type editMode={this.state.editMode} reference={reference}>
-                {reference.type}
-              </Type>
-              <Author editMode={this.state.editMode} reference={reference}>
-                  {reference.author}
-              </Author>
+            <View hidden={reference.deleted}>
+              <View>
+                <Name reference={reference}>{reference.name}</Name>
+                <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
+                  <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit} handleSort={this.handleSort} handleDelete={this.handleDelete}/>
+                </Text>
+              </View>
+              <URL editMode={this.state.editMode} reference={reference} />
+              <NameEdit editMode={this.state.editMode} reference={reference}/>
+              <AnchorEdit editMode={this.state.editMode} reference={reference}/>
+              <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
+              <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
+                <Type editMode={this.state.editMode} reference={reference}>
+                  {reference.type}
+                </Type>
+                <Author editMode={this.state.editMode} reference={reference}>
+                    {reference.author}
+                </Author>
+              </View>
+              <Description editMode={this.state.editMode} reference={reference}>{reference.description}</Description>
+              <Collection editMode={this.state.editMode} reference={reference}/>
+              <Tags editMode={this.state.editMode} reference={reference}>{reference.tags}</Tags>
             </View>
-            <Description editMode={this.state.editMode} reference={reference}>{reference.description}</Description>
-            <Collection editMode={this.state.editMode} reference={reference}/>
-            <Tags editMode={this.state.editMode} reference={reference}>{reference.tags}</Tags>
           </View>
         </View>
       </View>

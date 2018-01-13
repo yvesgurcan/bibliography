@@ -87,24 +87,55 @@ class ReferenceListContainer extends Component {
 
   addSortEventListener = (referenceId) => {
     let id = this.props.matchReferenceId(referenceId, true)
-    document.addEventListener("mousemove", (event) => this.dragReferenceCard(event, referenceId))
-  }
-
-  removeSortEventListener = (referenceId) => {
-    window.removeEventListener("mousemouve", this.dragReferenceCard, false)
-  }
-
-  dragReferenceCard = (event, referenceId) => {
-    console.log(event)
+    
     let referenceCard = document.getElementById(referenceId)
-    console.log(event.clientY, referenceCard.getBoundingClientRect().y)
-
-    this.props.dispatch({type: "BACKUP_ORIGINAL_STYLE", style: referenceCard})
-
+    console.log(referenceCard.style)
+    this.props.dispatch({type: "BACKUP_ORIGINAL_STYLE", style: {...referenceCard.style}})
+    
+    referenceCard.style.left = (referenceCard.style.left.replace("px","") + 5) + "px"
     referenceCard.style.position = "absolute"
     referenceCard.style.zIndex = 900
-    referenceCard.style.top = (event.clientY - 60) + "px"
     referenceCard.style.width = (document.getElementById("root").offsetWidth - 42) + "px"
+    referenceCard.style.boxShadow = "6px 6px 2px 1px rgba(0, 0, 0, .2)"
+
+    let positions = []
+    let referenceIds = this.props.filteredReferences.map(reference => this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null)
+    referenceIds = referenceIds.filter(refCard => refCard !== referenceId)
+    positions = referenceIds.map(referenceId => {
+      return {id: referenceId, y: document.getElementById(referenceId).getBoundingClientRect().top}
+    })
+
+    document.addEventListener("mousemove", (event) => this.dragReferenceCard(event, referenceCard, positions))
+    document.addEventListener("click", (event) => this.dropReferenceCard(event, referenceCard))
+  }
+
+  dragReferenceCard = (event, referenceCard, positions) => {
+    let currentY = (event.clientY - 60)
+    referenceCard.style.top = currentY + "px"
+
+    let abovePositions = []
+    let above = positions.filter((refCard, index) => {
+      abovePositions = [...abovePositions, refCard.y]
+      return refCard.y < currentY
+    })
+    let closestAbove = null//Math.min.apply(null, abovePositions)
+
+    let belowPositions = []
+    let below = positions.filter((refCard, index) => {
+      belowPositions = [...belowPositions, refCard.y]
+      return refCard.y > currentY
+    })
+    let closestBelow = null//Math.max.apply(null, belowPositions)
+
+    console.log({y: currentY, above: above, below: below, closestAbove: closestAbove, closestBelow: closestBelow})
+
+  }
+
+  dropReferenceCard = (event, referenceCard) => {
+    console.log(event)
+    
+    document.removeEventListener("mousemouve", this.dragReferenceCard)
+    document.removeEventListener("click", this.dropReferenceCard)
 
   }
 

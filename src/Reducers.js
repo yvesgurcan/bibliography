@@ -538,8 +538,9 @@ function Reducer (state = initState, action) {
         case "BACKUP_ORIGINAL_STYLE":
             newState = {
                 ...state,
-                style: action.style,
+                cardStyle: action.style,
             }
+            break
 
         // delete
 
