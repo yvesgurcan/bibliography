@@ -91,7 +91,7 @@ class ReferenceListContainer extends Component {
     referenceCard.style.left = (referenceCard.style.left.replace("px","") + 5) + "px"
 
     let positions = []
-    let referenceIds = this.props.filteredReferences.map((reference, index) => ({id: this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null, index: index - 1}))
+    let referenceIds = this.props.filteredReferences.map((reference, index) => ({id: this.props.getAnchorId(reference), index: index - 1}))
     referenceIds = referenceIds.filter(refCard => refCard.id !== referenceId)
     positions = referenceIds.map(referenceId => {
       return {id: referenceId.id, index: referenceId.index, y: document.getElementById(referenceId.id).offsetTop - 200}

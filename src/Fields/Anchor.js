@@ -29,14 +29,14 @@ export const Anchor = connect(mapStateToProps)(AnchorContainer)
 class AnchorEditContainer extends Component {
 
   saveChange = (input) => {
-    let value = input.value
+    let value = this.props.lowerCase(this.props.removeDangerousCharacters(input.value))
+    if (value !== input.value) {
+      this.props.dispatch({type: "SHOW_CASE_INSENSITIVE_WARNING"})
+    }
     if (this.props.addMode) {
       this.props.dispatch({type: "EDIT_NEW_REFERENCE_NAME", name: value})
     }
     else {
-      if (input.inputType === "checkbox") {
-        value = input.checked
-      }
       this.props.dispatch({type: "SAVE_CHANGES", url: this.props.reference.url, name: input.name, value: value})  
     }
   }
@@ -48,7 +48,7 @@ class AnchorEditContainer extends Component {
       <View style={{marginBottom: 10}}>
           <Label>Anchor:</Label>
           <TextInput name="anchor" onChange={this.saveChange} value={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name))} style={{width: "100%", marginBottom: 0}}/>
-          <SmallText>Please note that anchors are not case sensitive. All uppercase characters are automatically replaced by their lowercase counterpart.</SmallText>
+          <SmallText>{this.props.caseInsensitiveAnchors}</SmallText>
       </View>
     )
   }

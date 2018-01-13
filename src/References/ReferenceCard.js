@@ -105,7 +105,7 @@ class ReferenceCardContainer extends Component {
   handleSort = () => {
     if (this.props.sortMode) return null
     let reference = this.props.reference
-    let referenceId = this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name)) || null
+    let referenceId = this.props.getAnchorId(reference)
     this.props.dispatch({type: "SORT_MODE_ON", referenceIndex: this.props.index})
     this.props.addSortEventListener(referenceId)
   }

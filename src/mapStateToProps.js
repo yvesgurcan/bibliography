@@ -16,7 +16,7 @@ const lowerCase = (string) => {
 
 const removeDangerousCharacters = (string) => {
     if (string) {
-        return String(string).replace(/[ '"]/g, "")
+        return String(string).replace(/[ '"]/g, "").replace(/(www.|http:\/\/|https:\/\/|ftp:\/\/)/g, "")
     }
     return string
 }

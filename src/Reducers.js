@@ -426,6 +426,13 @@ function Reducer (state = initState, action) {
 
             break
 
+        case "SHOW_CASE_INSENSITIVE_WARNING":
+            newState = {
+                ...state,
+                caseInsensitiveAnchors: "Please note that anchors are not case sensitive. All uppercase characters are replaced by their lowercase counterpart. Additionally, a small set of special characters are not allowed."
+            }
+            break
+
         case "CLEANUP":
 
             // find the reference in the list
@@ -460,7 +467,8 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                references: [...newReferences]
+                references: [...newReferences],
+                caseInsensitiveAnchors: undefined,
             }
 
             break
