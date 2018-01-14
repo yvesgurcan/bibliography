@@ -30,7 +30,7 @@ function Reducer (state = initState, action) {
     let editReference = []
     let backupReference = []
     let refIndex = null
-    let newFeedback = {...state.feedback}
+    let newFeedback = undefined
     let referenceMatch = []
 
     switch (action.type) {
@@ -182,8 +182,10 @@ function Reducer (state = initState, action) {
             let addedRef =  {url: state.newReferenceUrl || "", name: state.newReferenceName || ""}
 
             if (addedRef.url === "") {
-                newFeedback.status = "warning"
-                newFeedback.message = "Please enter a valid URL to create a new reference."
+                newFeedback = {
+                    status: "warning",
+                    message: "Please enter a valid URL to create a new reference.",
+                }
                 newState = {
                     ...state,
                     feedback: {...newFeedback},
@@ -238,7 +240,17 @@ function Reducer (state = initState, action) {
             }
 
             // modify the reference
-            editReference[0].newUrl = action.newUrl
+            let newUrl = action.newUrl
+            if (newUrl.match(/(^http:\/\/|^https:\/\/)/) === null) {
+                if (newUrl.length <= 6) {
+                    newUrl = "http://"                    
+                }
+                else {
+                    // TODO: check if newUrl contains fragments of the http(s):// string at the beginning and act accordingly (by replacing the malformed http prefix with a clean one)
+                    newUrl = "http://"  + newUrl
+                }
+            }
+            editReference[0].newUrl = newUrl
 
             newState = {
                 ...state,
@@ -289,11 +301,11 @@ function Reducer (state = initState, action) {
             if (refIndex === null) {
                 newFeedback = ReferenceNotFound()
             }
-
-            // modify the reference
+            // create a new array
             if (!editReference[0].tags) {
                 editReference[0].tags = [""]
             }
+            // add an empty value at the end of the array
             else {
                 editReference[0].tags = [...editReference[0].tags, ""]
             }
@@ -350,13 +362,24 @@ function Reducer (state = initState, action) {
                 newFeedback = ReferenceNotFound()
             }
 
-            // modify the reference
-            if (!editReference[0].collection) {
-                editReference[0].collection = [""]
+            let newItem = {name: "", url: "http://", type: "", author: ""}
+
+            // create a new array and insert values from the reference as the first element
+            if (!editReference[0].collection || editReference[0].collection.length === 0) {
+                newItem = {
+                    url: editReference[0].url,
+                    name: editReference[0].name,
+                    type: editReference[0].type,
+                    author: editReference[0].author,
+                }
+                editReference[0].collection = [{...newItem}]
             }
+            // add a new object at the end of the array
             else {
-                editReference[0].collection = [...editReference[0].collection, {name: "", url: "", type: "", author: ""}]
+                editReference[0].collection = [...editReference[0].collection, {...newItem}]
             }
+
+
 
             // put it back in the list
             newReferences[refIndex] = editReference[0]
@@ -366,6 +389,49 @@ function Reducer (state = initState, action) {
                 feedback: {...newFeedback},
                 references: [...newReferences]
             }
+            break
+
+        case "EDIT_COLLECTION_ITEM":
+            // find the reference in the list
+            editReference = [...newReferences.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })]
+
+            if (refIndex === null) {
+                newFeedback = ReferenceNotFound()
+            }
+
+            let value = action.value
+            if (action.name === "url") {
+                if (value.match(/(^http:\/\/|^https:\/\/)/) === null) {
+                    if (value.length <= 6) {
+                        value = "http://"                    
+                    }
+                    else {
+                        value = "http://"  + value
+                    }
+                }
+    
+                if (action.itemIndex === 0) {
+                    // TODO backup url in a way that is similar to the master url
+                }    
+            }
+
+            editReference[0].collection[action.itemIndex][action.name] = value
+
+            newReferences[refIndex] = editReference[0]
+
+            newState = {
+                ...state,
+                feedback: {...newFeedback},
+                references: [...newReferences],
+                filteredReferences: [...newReferences],
+            }
+
             break
 
         case "REMOVE_COLLECTION_ITEM":
@@ -382,8 +448,17 @@ function Reducer (state = initState, action) {
                 newFeedback = ReferenceNotFound()
             }
 
-            // modify the reference
-            editReference[0].collection = [...editReference[0].collection]
+            // move the data of the last collection item to the top of the reference
+            if (editReference[0].collection.length === 1) {
+                let valuesFromItem = {
+                    url: editReference[0].collection[0].url,
+                    name: editReference[0].collection[0].name,
+                    type: editReference[0].collection[0].type,
+                    author: editReference[0].collection[0].author,
+                }
+                editReference[0] = { ...valuesFromItem, ...editReference[0]}
+            }
+            // remove the last collection item
             editReference[0].collection.pop()
 
             // put it back in the list
@@ -392,7 +467,8 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 feedback: {...newFeedback},
-                references: [...newReferences]
+                references: [...newReferences],
+                filteredReferences: [...newReferences],
             }
             break
 
