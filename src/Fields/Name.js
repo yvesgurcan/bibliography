@@ -11,7 +11,7 @@ class NameContainer extends Component {
   render = () => {
     return (
       <View style={{display: "inline-block", ...this.props.style}}>
-        <Link href={this.props.reference.url} fakeLink noStyle><h2 style={{margin: 0}}>{this.props.children || this.props.reference.url}</h2></Link>
+        <Link href={this.props.reference.url} target={"_blank"} fakeLink={!this.props.editMode} noStyle><h2 style={{margin: 0}}>{this.props.children || this.props.reference.url}</h2></Link>
       </View>
     )
   }

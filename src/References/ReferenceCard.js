@@ -129,7 +129,7 @@ class ReferenceCardContainer extends Component {
               </View>
             <View hidden={reference.deleted}>
               <View>
-                <Name reference={reference}>{reference.name}</Name>
+                <Name reference={reference} editMode={this.state.editMode}>{reference.name}</Name>
                 <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
                   <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit} handleSort={this.handleSort} handleDelete={this.handleDelete}/>
                 </Text>
