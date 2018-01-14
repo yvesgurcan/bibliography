@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import {connect} from "react-redux"
 import mapStateToProps from "./../mapStateToProps"
 
+import Link from "./../Boilerplate/Link"
 import Text from "./../Boilerplate/Text"
 import View from "./../Boilerplate/View"
 
@@ -35,11 +36,15 @@ class ReferenceCardContainer extends Component {
   }
 
   onHover = (event) => {
-    if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted || this.props.sortMode || !this.props.reference.url) return null
+    if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted || this.props.sortMode || !this.props.reference.url || !this.props.isOnline) return null
     this.setState({dynamicStyle: this.state.hoverStyle})
   }
     
   onClick = (event) => {
+    if (!this.props.isOnline) {
+      this.props.dispatch({type: "DO_NOT_FOLLOW_LINK_MESSAGE"})
+      return null
+    }
     if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted || this.props.sortMode || !this.props.reference.url) return null
     this.setState({dynamicStyle: this.state.clickedStyle})
     setTimeout(function() {
@@ -50,10 +55,6 @@ class ReferenceCardContainer extends Component {
   }
 
   OpenUrl = () => {
-      if (!this.props.isOnline) {
-        this.props.dispatch({type: "DO_NOT_FOLLOW_LINK_MESSAGE"})
-        return null
-      }
       if (this.props.sortMode || !this.props.reference.url) return null 
     window.open(this.props.reference.url, "_blank")
   }
@@ -122,10 +123,10 @@ class ReferenceCardContainer extends Component {
         <View className="placeholder" id={"placeholder_" + this.props.getAnchorId(reference)} style={{display: "none", height: "50px", marginTop: "10px", border: "3px dashed lightgray"}} />
         <View className="referenceCard" id={this.props.getAnchorId(reference)} style={this.props.sortMode && this.props.sortIndex === this.props.index ? {userSelect: "none", position: "fixed", zIndex: 900, width: (document.getElementById("root").offsetWidth - 42), boxShadow: "6px 6px 2px 1px rgba(0, 0, 0, .2)", background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10} : {userSelect: this.props.sortMode ? "none" : null, background: "white", border: "1px solid lightgray", padding: 20, marginTop: 10, width: "calc(100%-20px)"}}>
           <View onClick={this.onClick} onMouseEnter={this.onHover} onMouseLeave={this.onMouseLeave} onMouseOut={this.onMouseOut} style={{cursor: "pointer", ...this.state.dynamicStyle}}>
-            <View hidden={!reference.deleted}>
-                <Name reference={reference} style={{textDecoration: "line-through"}}>{reference.name}</Name>
-                <Functionalities reference={reference} handleDelete={this.handleDelete} handleConfirmDelete={this.handleConfirmDelete} handleCancelDelete={this.handleCancelDelete} />     
-            </View>
+              <View hidden={!reference.deleted}>
+                  <Name reference={reference} style={{textDecoration: "line-through"}}>{reference.name}</Name>
+                  <Functionalities reference={reference} handleDelete={this.handleDelete} handleConfirmDelete={this.handleConfirmDelete} handleCancelDelete={this.handleCancelDelete} />     
+              </View>
             <View hidden={reference.deleted}>
               <View>
                 <Name reference={reference}>{reference.name}</Name>
@@ -136,7 +137,15 @@ class ReferenceCardContainer extends Component {
               <URL editMode={this.state.editMode} reference={reference} />
               <NameEdit editMode={this.state.editMode} reference={reference}/>
               <AnchorEdit editMode={this.state.editMode} reference={reference}/>
-              <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
+              {
+                this.state.editMode
+                ?
+                  <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
+                :
+                <Link href={this.props.reference.url} fakeLink noStyle>
+                  <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
+                </Link>  
+              }
               <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
                 <Type editMode={this.state.editMode} reference={reference}>
                   {reference.type}
@@ -145,7 +154,15 @@ class ReferenceCardContainer extends Component {
                     {reference.author}
                 </Author>
               </View>
+              {
+                this.state.editMode 
+                ?
+                <Description editMode={this.state.editMode} reference={reference}>{reference.description}</Description>
+                :
+                <Link href={reference.url} fakeLink noStyle>
               <Description editMode={this.state.editMode} reference={reference}>{reference.description}</Description>
+            </Link>
+              }
               <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
                 <Collection editMode={this.state.editMode} reference={reference}/>
                 <Tags editMode={this.state.editMode} reference={reference}>{reference.tags}</Tags>

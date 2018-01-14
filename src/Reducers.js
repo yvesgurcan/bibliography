@@ -599,23 +599,62 @@ function Reducer (state = initState, action) {
             break
 
         case "BACKUP_REFERENCE":
-            let newBackup = [...state.referenceBackup || [], action.reference]
+            let newBackup = [...state.referenceBackup || [], {...action.reference}]
+
+            if (!action.reference.url || action.reference.url === "") {
+                newFeedback = {
+                    status: "error",
+                    message: "This reference does not have a URL. This field is required! Please enter a URL.",
+                }
+            }
+
             newState = {
                 ...state,
-                referenceBackup: [...newBackup]
+                referenceBackup: [...newBackup],
+                feedback: {...newFeedback},
             }
             break
 
         case "REMOVE_BACKUP":
+
+            newBackup = [...state.referenceBackup.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return false
+                }
+                return true
+            })]
+ 
+ 
+            if (refIndex === null) {
+                 newFeedback = ReferenceNotFound()
+            }
+
             newState = {
                 ...state,
-                referenceBackup: undefined,
+                referenceBackup: [...newBackup],
+                feedback: {...newFeedback},
             }
             break
 
         case "CANCEL_EDIT":
 
-            if (state.referenceBackup.length === 0) {
+            backupReference = [...state.referenceBackup.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    refIndex = index
+                    return true
+                }
+                return false
+            })]
+
+            newBackup = [...state.referenceBackup.filter((ref, index) => {
+                if (ref.url === action.url) {
+                    return false
+                }
+                return true
+            })]
+
+            if (backupReference.length === 0) {
                 newFeedback = {
                     status: "error",
                     message: "The reference could not be restored. No backup found. Changes to the reference were applied.",
@@ -625,19 +664,17 @@ function Reducer (state = initState, action) {
                     feedback: {...newFeedback}
                 }
             }
-            else if (state.referenceBackup.length > 1) {
+            else if (backupReference.length > 1) {
                 newFeedback = {
                     status: "error",
                     message: "More than one reference backup element was found. Changes to the reference were applied.",
                 }
                 newState = {
                     ...state,
-                    feedback: {...newFeedback}
+                    feedback: {...newFeedback},
                 }
             }
             else {
-
-                backupReference = [...state.referenceBackup]
 
                 newReferences = [...state.filteredReferences]
                 newReferences.map((ref, index) => {
@@ -658,7 +695,7 @@ function Reducer (state = initState, action) {
                     ...state,
                     references: [...newReferences],
                     filteredReferences: [...newReferences],
-                    referenceBackup: undefined,
+                    referenceBackup: [...newBackup],
                     feedback: {...newFeedback},
                 }
             }

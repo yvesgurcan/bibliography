@@ -15,10 +15,15 @@ class TextInputContainer extends Component {
     alteredInput.inputType = "textbox"
     this.props.onChange(alteredInput)
   }
+  onBlur = (input) => {
+    if (this.props.onBlur) {
+      this.props.onBlur(input.target)
+    }
+  }
   render = () => {
     let props = {...this.props}
     return (
-      <input name={this.props.name} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} value={this.props.value || ""} placeholder={props.placeholder} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
+      <input name={this.props.name} disabled={this.props.disabled || this.props.sortMode} onChange={this.onChange} onBlur={this.onBlur} value={this.props.value || ""} placeholder={props.placeholder} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
     )
   }
 }
@@ -57,8 +62,8 @@ class CheckboxContainer extends Component {
     let props = {...this.props}
     return (
       <Text>
-        <input name={this.props.name} disabled={props.disabled || props.sortMode} type="checkbox" onChange={this.onChange} checked={props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
-        <Label>{this.props.children}</Label>
+        <input name={this.props.name} id={this.props.name} disabled={props.disabled || props.sortMode} type="checkbox" onChange={this.onChange} checked={props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
+        <Label htmlFor={this.props.name}>{this.props.children}</Label>
       </Text>
     )
   }

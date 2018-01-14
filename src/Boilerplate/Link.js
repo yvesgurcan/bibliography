@@ -6,13 +6,13 @@ export class LinkContainer extends Component {
 
   state = {
     normalStyle: {
-      color: "darkseagreen"
+      color: this.props.noStyle ? "inherit" : "darkseagreen"
     },
     hoverStyle: {
-      color: "darkgreen"
+      color: this.props.noStyle ? "inherit" : "darkgreen"
     },
     clickedStyle: {
-      color: "lightgreen"
+      color: this.props.noStyle ? "inherit" : "lightgreen"
     }
   }
   
@@ -21,18 +21,23 @@ export class LinkContainer extends Component {
   }
 
   onHover = () => {
+    if (!this.props.isOnline && (this.props.target === "_blank" || this.props.fakeLink)) return null
     this.setState({dynamicStyle: this.state.hoverStyle})
   }
 
   onClick = (event) => {
+    if (!this.props.isOnline && (this.props.target === "_blank" || this.props.fakeLink)) {
+      event.preventDefault()
+      this.props.dispatch({type: "DO_NOT_FOLLOW_LINK_MESSAGE"})
+      return null
+    }
+    if (this.props.fakeLink) {
+      event.preventDefault()
+    }
     this.setState({dynamicStyle: this.state.clickedStyle})
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    if (!this.props.isOnline) {
-      this.props.dispatch({type: "DO_NOT_FOLLOW_LINK_MESSAGE"})
-      return null
-    }
     if (this.props.onClick) {
       this.props.onClick(event.target)
       event.stopPropagation()
