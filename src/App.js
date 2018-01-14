@@ -2,11 +2,15 @@ import React, { Component } from "react"
 import {Provider, connect} from "react-redux"
 import mapStateToProps, {store} from "./mapStateToProps"
 
+import Overlay from "./Boilerplate/Overlay"
 import View from "./Boilerplate/View"
 
 import Add from "./CRUD/Add"
+import Login from "./CRUD/Login"
 import Refresh from "./CRUD/Refresh"
 import Feedback from "./CRUD/Feedback"
+
+import LoginModal from "./Modals/LoginModal"
 
 import Search from "./Search/Search"
 
@@ -57,9 +61,16 @@ class ListPageContainer extends Component {
   render = () => (
     <View>
       <Feedback />
-      <PageTitle>A Programmer's Bibliography</PageTitle>
-      <Search/>
-      <ReferenceList/>
+      <Overlay>
+        <View style={{textAlign: "right"}}>
+          <Login/>
+          <Refresh/>
+        </View>
+        <PageTitle>A Programmer's Bibliography</PageTitle>
+        <Search/>
+        <ReferenceList/>
+      </Overlay>
+      <LoginModal/>
     </View>
   )
 }
@@ -211,7 +222,6 @@ class ReferenceListContainer extends Component {
     if (!this.props.references) return null
     return (
       <View onMouseMove={this.dragReferenceCard} onClick={this.dropReferenceCard}>
-        <Refresh />
         <Add />
         <NewReferenceCard/>
         {this.props.filteredReferences.map((reference, index) => (

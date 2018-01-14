@@ -42,6 +42,7 @@ function Reducer (state = initState, action) {
         case "GET_REFERENCES":
             newState = {
                 ...state,
+                showModal: true,
                 allowEdit: true,
                 references: [
                     {
@@ -175,6 +176,15 @@ function Reducer (state = initState, action) {
                 ...state,
                 feedback: {...newFeedback},
                 offlineLinkWarningDisplayed: offlineLinkWarningDisplayed,
+            }
+            break
+
+        // modals
+
+        case "HIDE_MODAL":
+            newState = {
+                ...state,
+                showModal: undefined,
             }
             break
 
