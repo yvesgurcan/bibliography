@@ -50,6 +50,10 @@ class ReferenceCardContainer extends Component {
   }
 
   OpenUrl = () => {
+      if (!this.props.isOnline) {
+        this.props.dispatch({type: "DO_NOT_FOLLOW_LINK_MESSAGE"})
+        return null
+      }
       if (this.props.sortMode || !this.props.reference.url) return null 
     window.open(this.props.reference.url, "_blank")
   }

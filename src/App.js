@@ -32,12 +32,26 @@ class PageTitle extends Component {
 class ListPageContainer extends Component {
 
   componentDidMount = () => {
+    // responsiveness
     this.updateWidth()
     window.addEventListener("resize", this.updateWidth)
+    this.props.dispatch({type: "UPDATE_CONNECTION_STATUS", isOnline: navigator.onLine})
+    // connectivity
+    window.addEventListener('offline', this.isOffline)
+    window.addEventListener('online', this.isOnline)
   }
+
 
   updateWidth = () => {
     store.dispatch({type: "CURRENT_WIDTH", width: window.innerWidth})
+  }
+
+  isOffline = () => {
+    this.props.dispatch({type: "UPDATE_CONNECTION_STATUS", isOnline: false})
+  }
+
+  isOnline = () => {
+    this.props.dispatch({type: "UPDATE_CONNECTION_STATUS", isOnline: true})
   }
 
   render = () => (

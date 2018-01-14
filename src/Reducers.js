@@ -30,10 +30,12 @@ function Reducer (state = initState, action) {
     let editReference = []
     let backupReference = []
     let refIndex = null
-    let newFeedback = undefined
+    let newFeedback = {...state.feedback}
     let referenceMatch = []
 
     switch (action.type) {
+
+        // init
 
         case "GET_REFERENCES_REMOTELY_ONLY":
             // falls through
@@ -115,6 +117,15 @@ function Reducer (state = initState, action) {
             }
             break
 
+        case "SET_HASHTAG":
+            newState = {
+                ...state,
+                hashtag: action.hashtag,        
+            }
+            break
+
+        // user messages
+
         case "CLEAR_FEEDBACK":
             newState = {
                 ...state,
@@ -122,10 +133,48 @@ function Reducer (state = initState, action) {
             }
             break
 
-        case "SET_HASHTAG":
+        // connectivity
+
+        case "UPDATE_CONNECTION_STATUS":
+
+            let offlineWarningDisplayed = state.offlineWarningDisplayed
+            if (!action.isOnline && !state.offlineWarningDisplayed) {
+                offlineWarningDisplayed = true
+                newFeedback = {
+                    message: "You are not connected.\nAny modification you make will only be available on this device until you are online again."
+                }
+            }
+            else if (!action.isOnline) {
+                newFeedback = {
+                    message: "You are not connected anymore."
+                }
+            }
+            else if (state.isOnline !== undefined) {
+                newFeedback = {
+                    message: "You are back online. Reconnecting to the server..."
+                    // TODO get a fresh set of data *OR* send updates to the server
+                }
+            }
             newState = {
                 ...state,
-                hashtag: action.hashtag,        
+                feedback: {...newFeedback},
+                isOnline: action.isOnline,
+                offlineWarningDisplayed: offlineWarningDisplayed,
+            }
+            break
+
+        case "DO_NOT_FOLLOW_LINK_MESSAGE":
+            let offlineLinkWarningDisplayed = state.offlineLinkWarningDisplayed
+            if (!offlineLinkWarningDisplayed) {
+                offlineLinkWarningDisplayed = true
+                newFeedback = {
+                    message: "You are not connected. All external links have been deactivated until your device is online again."
+                }
+            }
+            newState = {
+                ...state,
+                feedback: {...newFeedback},
+                offlineLinkWarningDisplayed: offlineLinkWarningDisplayed,
             }
             break
 

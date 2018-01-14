@@ -2,7 +2,8 @@ import React, { Component } from "react"
 import {connect} from "react-redux"
 import mapStateToProps from "./../mapStateToProps"
 
-
+import LineBreak from "./../Boilerplate/LineBreak"
+import Text from "./../Boilerplate/Text"
 import View from "./../Boilerplate/View"
 
 export class FeedbackContainer extends Component {
@@ -28,6 +29,10 @@ export class FeedbackContainer extends Component {
         }
     }
 
+    clearFeedback = () => {
+        this.props.dispatch({type: "CLEAR_FEEDBACK"})
+    }
+
     render = () => {
         if (!this.props.feedback || !this.props.feedback.message) {
             return null
@@ -36,10 +41,15 @@ export class FeedbackContainer extends Component {
         let color1 = (feedback.status === "error" ? "red" : feedback.status === "warning" ? "orange" : feedback.status === "success" ? "darkseagreen" : "royalblue")
         let color2 = feedback.status === "error" ? "rgb(255,235,235)" : feedback.status === "warning" ? "rgb(255,235,235)" : feedback.status === "success" ? "rgb(235,255,235)" : "rgb(240,245,255)"
         return (
-            <View style={{position: "fixed", zIndex: 1000, width: "100%", textAlign: "center"}}>
+            <View style={{userSelect: "none", position: "fixed", zIndex: 1000, width: "98%", textAlign: "center", margin: -4}}>
                 <View style={{display: "inline-block", borderRadius: 5, padding: 10, background: color2, border: "1px solid " + color1, color: color1}}>
-                    {feedback.message}
-                </View>
+                    <View>
+                        <View onClick={this.clearFeedback} style={{float: "right", height: 15, width: 15, cursor: "pointer", marginTop: -3, marginRight: -3, paddingBottom: 2}}> &times;</View>
+                        <View>
+                            {feedback.message.split("\n").map((line, index) => <Text key={index}>{line}{index < feedback.message.split("\n").length - 1 ? <LineBreak/> : null}</Text>)}
+                        </View>
+                        </View>
+                    </View>
             </View>
         )
     }
