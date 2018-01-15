@@ -129,6 +129,10 @@ class ReferenceCardContainer extends Component {
     this.props.addSortEventListener(referenceId)
   }
 
+  saveRemotely = (input) => {
+    this.props.dispatch({type: "SAVE_REMOTELY", name: input.name})
+  }
+
   render = () => {
     if (!this.props.reference) return null
     let reference = {...this.props.reference}
@@ -143,43 +147,53 @@ class ReferenceCardContainer extends Component {
               </View>
             <View hidden={reference.deleted}>
               <View>
-                <Name reference={reference} editMode={this.state.editMode}>{reference.name}</Name>
+                <Name editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>
+                  {reference.name}
+                </Name>
                 <Text onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
                   <Functionalities reference={reference} editMode={this.state.editMode} handleEdit={this.handleEdit} handleCancelEdit={this.handleCancelEdit} handleSort={this.handleSort} handleDelete={this.handleDelete}/>
                 </Text>
               </View>
               <URL editMode={this.state.editMode} reference={reference} />
-              <NameEdit editMode={this.state.editMode} reference={reference}/>
-              <AnchorEdit editMode={this.state.editMode} reference={reference}/>
+              <NameEdit editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}/>
+              <AnchorEdit editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}/>
               {
                 this.state.editMode
                 ?
-                  <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
+                  <Subtitle editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>
+                    {reference.subtitle}
+                  </Subtitle>
                 :
                 <Link href={this.props.reference.url} fakeLink noStyle>
-                  <Subtitle reference={reference} editMode={this.state.editMode}>{reference.subtitle}</Subtitle>
+                  <Subtitle editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>
+                    {reference.subtitle}
+                  </Subtitle>
                 </Link>  
               }
               <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-                <Type editMode={this.state.editMode} reference={reference}>
+                <Type editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>
                   {reference.type}
                 </Type>
-                <Author editMode={this.state.editMode} reference={reference}>
-                    {reference.author}
+                <Author editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>
+                  {reference.author}
                 </Author>
               </View>
               {
                 this.state.editMode 
                 ?
-                <Description editMode={this.state.editMode} reference={reference}>{reference.description}</Description>
+                <Description editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>
+                  {reference.description}
+                </Description>
                 :
                 <Link href={reference.url} fakeLink noStyle>
-              <Description editMode={this.state.editMode} reference={reference}>{reference.description}</Description>
-            </Link>
+                  <Description editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>
+                    {reference.description}
+                  </Description>
+                </Link>
               }
               <View onMouseEnter={this.onHoverFunctionalities} onMouseLeave={this.onHover}>
-                <Collection editMode={this.state.editMode} reference={reference}/>
-                <Tags editMode={this.state.editMode} reference={reference}>{reference.tags}</Tags>
+                <Collection editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}/>
+                <Tags editMode={this.state.editMode} saveRemotely={this.saveRemotely} reference={reference}>{reference.tags}</Tags>
                 <Anchor reference={reference}/>
               </View>
             </View>

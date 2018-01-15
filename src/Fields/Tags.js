@@ -20,14 +20,14 @@ class TagsContainer extends Component {
   }
 
   render() {
-    if (!this.props.children) return null
+    if (!this.props.children && !this.props.editMode) return null
     let reference = this.props.reference
     return (
       <View style={{marginTop: 8}}>
         {this.props.editMode ? <Label>Tags:</Label> : null}
         {this.props.editMode ? <Text style={{display: "inline-block", marginBottom: 2, marginRight: 5}}><Plus onClick={this.addTag}/> <Minus hidden={!reference.tags || reference.tags.length === 0} reference={reference} onClick={this.removeTag}/></Text> : null}
         {this.props.width < 790 ? <View/> : null}
-        {this.props.children.map((tag, index) => (<Text key={index}><Tag editMode={this.props.editMode} reference={reference} index={index}>{tag}</Tag>{this.props.children.length-1 === index || this.props.editMode ? " " : ", "}</Text>))}
+        {this.props.children && this.props.children.map((tag, index) => (<Text key={index}><Tag editMode={this.props.editMode} reference={reference} index={index}>{tag}</Tag>{this.props.children.length-1 === index || this.props.editMode ? " " : ", "}</Text>))}
       </View>      
     )
   }

@@ -17,7 +17,7 @@ class DescriptionContainer extends Component {
       return (
         <View>
           <Label>Description:</Label>
-          <TextArea name="description" value={this.props.children} onChange={this.saveChange} style={{resize: "vertical"}} />
+          <TextArea name="description" value={this.props.children} onChange={this.saveChange} onBlur={this.props.saveRemotely} style={{resize: "vertical"}} />
         </View>
       )
     }

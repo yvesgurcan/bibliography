@@ -44,7 +44,7 @@ class NameEditContainer extends Component {
     return (
       <View>
           <Label>Name:</Label>
-          <TextInput name="name" onChange={this.saveChange} value={this.props.addForm ? this.props.newReferenceName : this.props.reference.name} style={{width: "100%"}}/>
+          <TextInput name="name" onChange={this.saveChange} onBlur={this.props.saveRemotely} value={this.props.addForm ? this.props.newReferenceName : this.props.reference.name} style={{width: "100%"}}/>
       </View>
     )
   }

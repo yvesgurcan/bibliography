@@ -130,6 +130,8 @@ function Reducer (state = {}, action) {
     let newSignIn = {...state.signIn}
     let newShowModal = state.showModal
 
+    let localReferences = []
+
     switch (action.type) {
 
         // init
@@ -519,6 +521,19 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
                 references: [...newReferences],
             }
+            setLocalStorage("references", newReferences)
+            // for checkboxes
+            if (state.isOnline && (action.value === false || action.value === true)) {
+                // TODO api request
+                // action.name
+            }
+            break
+
+        case "SAVE_REMOTELY":
+            if (state.isOnline) {
+                // TODO api request
+                // action.name
+            }
             break
 
         case "ADD_TAG":
@@ -551,6 +566,7 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
                 references: [...newReferences]
             }
+            setLocalStorage("references", newReferences)
             break
 
         case "REMOVE_TAG":
@@ -579,6 +595,7 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
                 references: [...newReferences]
             }
+            setLocalStorage("references", newReferences)
             break
 
         case "ADD_COLLECTION_ITEM":
@@ -622,6 +639,7 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
                 references: [...newReferences]
             }
+            setLocalStorage("references", newReferences)
             break
 
         case "EDIT_COLLECTION_ITEM":
@@ -663,7 +681,7 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
                 references: [...newReferences],
             }
-
+            setLocalStorage("references", newReferences)
             break
 
         case "REMOVE_COLLECTION_ITEM":
@@ -701,6 +719,7 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
                 references: [...newReferences],
             }
+            setLocalStorage("references", newReferences)
             break
 
         case "SWAP_URLS":
@@ -900,6 +919,7 @@ function Reducer (state = {}, action) {
                         referenceBackup: [...newBackup],
                         feedback: {...newFeedback},
                     }
+                    setLocalStorage("references", newReferences)
                 }
             }
             break
@@ -966,6 +986,14 @@ function Reducer (state = {}, action) {
                 return false
             })
 
+            // find and omit the reference in the list
+            localReferences = [...state.references.filter((ref, index) => {
+                if (ref.url !== action.url) {
+                    return true
+                }
+                return false
+            })]
+
             if (refIndex === null) {
                 newFeedback = ReferenceNotFound()
             }
@@ -980,10 +1008,11 @@ function Reducer (state = {}, action) {
                 references: [...newReferences],
                 feedback: {...newFeedback},
             }
+            setLocalStorage("references", localReferences)
             break
         
         case "DELETE_REFERENCE_STAGE_2":
-            // find the reference in the list
+            // find and omit the reference in the list
             newReferences = [...state.references.filter((ref, index) => {
                 if (ref.url !== action.url) {
                     return true
@@ -1023,6 +1052,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences],
                 feedback: {...newFeedback},
             }
+            setLocalStorage("references", [...newReferences])
             break
 
         default:

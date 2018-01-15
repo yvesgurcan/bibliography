@@ -23,7 +23,7 @@ class TextInputContainer extends Component {
   render = () => {
     let props = {...this.props}
     return (
-      <input name={this.props.name} disabled={this.props.disabled || this.props.sortMode} type={this.props.type} onChange={this.onChange} onBlur={this.onBlur} value={this.props.value || ""} placeholder={props.placeholder} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
+      <input name={this.props.name} disabled={this.props.disabled || this.props.sortMode} type={this.props.type} onChange={this.onChange} onBlur={this.onBlur} value={this.props.value || ""} placeholder={props.placeholder} hidden={this.props.hidden} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
     )
   }
 }
@@ -39,10 +39,15 @@ class TextAreaContainer extends Component {
     alteredInput.inputType = "textarea"
     this.props.onChange(alteredInput)
   }
+  onBlur = (input) => {
+    if (this.props.onBlur) {
+      this.props.onBlur(input.target)
+    }
+  }
   render = () => {
     let props = {...this.props}
     return (
-      <textarea name={this.props.name} disabled={props.disabled || props.sortMode} onChange={this.onChange} value={props.value || ""} placeholder={props.placeholder} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...props.style}}/>
+      <textarea name={this.props.name} disabled={props.disabled || props.sortMode} onChange={this.onChange} onBlur={this.onBlur} value={props.value || ""} placeholder={props.placeholder} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", width: "100%", ...props.style}}/>
     )
   }
 }

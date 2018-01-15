@@ -57,13 +57,13 @@ class AuthorContainer extends Component {
   }
 
   render = () => {
-    var reference = this.props.reference
+    var reference = {...this.props.reference}
     if (this.props.editMode) {
       return (
         <View>
           <Label>Author:</Label>
-          <TextInput name="author" hidden={reference.variousAuthors} value={this.props.children} onChange={this.saveChange} style={{width: "100%"}} />
-          <Checkbox name="variousAuthors" value={reference.variousAuthors} onChange={this.saveChange}>Various authors</Checkbox>
+          <TextInput name="author" hidden={reference.variousAuthors} value={this.props.children} onChange={this.saveChange} onBlur={this.props.saveRemotely} style={{width: "100%"}} />
+          <Checkbox name="variousAuthors" checked={reference.variousAuthors} onClick={this.saveChange}>Various authors</Checkbox>
         </View>
       )
     }
