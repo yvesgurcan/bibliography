@@ -17,7 +17,7 @@ class NewReferenceCardContainer extends Component {
     return (
       <View id="new" style={{border: "1px solid lightgray", padding: 20, marginTop: 10}}>
         <View style={{marginBottom: 5}}>
-          <Name>New Reference</Name>
+          <Name addForm>New Reference</Name>
         </View>
         <URL addForm />
         <NameEdit addForm />

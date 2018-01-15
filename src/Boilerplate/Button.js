@@ -1,20 +1,18 @@
 import React, { Component } from "react"
-import {connect} from "react-redux"
-import mapStateToProps from "./../mapStateToProps"
 
 import Text from "./../Boilerplate/Text"
 
-export class LoginContainer extends Component {
+export class Button extends Component {
 
   state = {
     normalStyle: {
-      color: "steelblue"
+      background: "steelblue"
     },
     hoverStyle: {
-      color: "navy"
+      background: "cornflowerblue"
     },
     clickedStyle: {
-      color: "lightskyblue"
+      background: "lightskyblue"
     }
   }
 
@@ -29,15 +27,19 @@ export class LoginContainer extends Component {
 
   onHover = () => {
     this.setState({dynamicStyle: this.state.hoverStyle})
+    if (this.props.onHover) {
+      this.props.onHover()        
+  }
   }
     
   onClick = (event) => {
-
     this.setState({dynamicStyle: this.state.clickedStyle})
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    this.props.dispatch({type: "SHOW_MODAL", id: "login"})
+    if (this.props.onClick) {
+        this.props.onClick()        
+    }
   }
 
   onMouseOut = () => {
@@ -45,11 +47,8 @@ export class LoginContainer extends Component {
   }
 
   render = () => (
-    <Text onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{fontSize: "80%", fontWeight: "bold", textDecoration: "underline", cursor: "pointer", userSelect: "none", margin: 8, marginRight: 5, ...this.state.dynamicStyle}}>
-      Sign In
-    </Text>
+    <Text {...this.props} onClick={this.onClick} onMouseEnter={this.onHover} onMouseOut={this.onMouseOut} style={{display: "inline-block", cursor: "pointer", userSelect: "none", padding: 9, marginTop: 5, marginRight: 5, borderRadius: 5, color: "white", ...this.state.dynamicStyle}}/>
   )
 }
-export const Login = connect(mapStateToProps)(LoginContainer)
 
-export default Login
+export default Button

@@ -42,7 +42,7 @@ function Reducer (state = initState, action) {
         case "GET_REFERENCES":
             newState = {
                 ...state,
-                showModal: true,
+                showModal: "login",
                 allowEdit: true,
                 references: [
                     {
@@ -185,6 +185,24 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 showModal: undefined,
+            }
+            break
+
+        case "SHOW_MODAL":
+            newState = {
+                ...state,
+                showModal: action.id,
+            }
+            break
+
+        // sign in
+
+        case "UPDATE_SIGN_IN":
+            let newSignIn = {...state.signIn}
+            newSignIn[action.name] = action.value
+            newState = {
+                ...state,
+                signIn: {...newSignIn}
             }
             break
 

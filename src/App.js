@@ -2,7 +2,8 @@ import React, { Component } from "react"
 import {Provider, connect} from "react-redux"
 import mapStateToProps, {store} from "./mapStateToProps"
 
-import Overlay from "./Boilerplate/Overlay"
+import {PageTitle} from "./Boilerplate/Headings"
+import {OverlayBackground} from "./Boilerplate/Overlay"
 import View from "./Boilerplate/View"
 
 import Add from "./CRUD/Add"
@@ -10,7 +11,7 @@ import Login from "./CRUD/Login"
 import Refresh from "./CRUD/Refresh"
 import Feedback from "./CRUD/Feedback"
 
-import LoginModal from "./Modals/LoginModal"
+import Modals from "./Modals/Modals"
 
 import Search from "./Search/Search"
 
@@ -24,12 +25,6 @@ class AppContainer extends Component {
     <Provider store={store}>
       <ListPage/>
     </Provider>
-  )
-}
-
-class PageTitle extends Component {
-  render = () => (
-    <h1>{this.props.children}</h1>
   )
 }
 
@@ -61,16 +56,18 @@ class ListPageContainer extends Component {
   render = () => (
     <View>
       <Feedback />
-      <Overlay>
+      <OverlayBackground>
         <View style={{textAlign: "right"}}>
           <Login/>
           <Refresh/>
         </View>
         <PageTitle>A Programmer's Bibliography</PageTitle>
         <Search/>
+        <Add />
+        <NewReferenceCard/>
         <ReferenceList/>
-      </Overlay>
-      <LoginModal/>
+      </OverlayBackground>
+      <Modals />
     </View>
   )
 }
@@ -222,8 +219,6 @@ class ReferenceListContainer extends Component {
     if (!this.props.references) return null
     return (
       <View onMouseMove={this.dragReferenceCard} onClick={this.dropReferenceCard}>
-        <Add />
-        <NewReferenceCard/>
         {this.props.filteredReferences.map((reference, index) => (
           <ReferenceCard key={reference.url || reference.name || reference.descriptions} index={index} reference={reference} addSortEventListener={this.addSortEventListener}/>
         ))}

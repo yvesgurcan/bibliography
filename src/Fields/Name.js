@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import {connect} from "react-redux"
 import mapStateToProps from "./../mapStateToProps"
 
+import {ReferenceName} from "./../Boilerplate/Headings"
 import {TextInput} from "./../Boilerplate/Input"
 import Label from "./../Boilerplate/Label"
 import Link from "./../Boilerplate/Link"
@@ -9,9 +10,14 @@ import View from "./../Boilerplate/View"
 
 class NameContainer extends Component {
   render = () => {
+    if (this.props.addForm) {
+      return (
+        <ReferenceName>{this.props.children}</ReferenceName>        
+      )
+    }
     return (
       <View style={{display: "inline-block", ...this.props.style}}>
-        <Link href={this.props.reference.url} target={"_blank"} fakeLink={!this.props.editMode} noStyle><h2 style={{margin: 0}}>{this.props.children || this.props.reference.url}</h2></Link>
+        <Link href={this.props.reference.url} target={"_blank"} fakeLink={!this.props.editMode} noStyle><ReferenceName>{this.props.children || this.props.reference.url}</ReferenceName></Link>
       </View>
     )
   }
