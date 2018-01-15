@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {connect} from "react-redux"
-import mapStateToProps, {store} from "./../mapStateToProps"
+import mapStateToProps from "./../mapStateToProps"
 
 import Modal from "./../Boilerplate/Modal"
 
