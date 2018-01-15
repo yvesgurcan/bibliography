@@ -6,6 +6,7 @@ import {Overlay} from "./../Boilerplate/Overlay"
 import View from "./../Boilerplate/View"
 
 import LoginModal from "./LoginModal"
+import ConfirmRefreshModal from "./ConfirmRefreshModal"
 
 class ModalsContainer extends Component {
     render = () => {
@@ -13,6 +14,7 @@ class ModalsContainer extends Component {
         <View style={{position: "fixed"}}>
             <Overlay/>
             <LoginModal/>
+            <ConfirmRefreshModal/>
         </View>
         )
     }

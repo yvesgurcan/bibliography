@@ -47,7 +47,7 @@ class AnchorEditContainer extends Component {
     return (
       <View style={{marginBottom: 10}}>
           <Label>Anchor:</Label>
-          <TextInput name="anchor" onChange={this.saveChange} value={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name))} style={{width: "100%", marginBottom: 0}}/>
+          <TextInput name="anchor" onChange={this.saveChange} value={this.props.removeDangerousCharacters(this.props.lowerCase(reference.anchor || reference.name || reference.url))} style={{width: "100%", marginBottom: 0}}/>
           <SmallText>{this.props.caseInsensitiveAnchors}</SmallText>
       </View>
     )

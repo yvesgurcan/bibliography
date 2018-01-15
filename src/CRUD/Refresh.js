@@ -37,6 +37,10 @@ export class RefreshContainer extends Component {
     this.timeout = setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
+    if (this.props.noSignIn) {
+      this.props.dispatch({type: "SHOW_MODAL", id: "confirmRefresh"})
+      return null
+    }
     this.props.dispatch({type: "GET_REFERENCES_REMOTELY_ONLY"})
   }
 

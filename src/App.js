@@ -67,7 +67,7 @@ class ListPageContainer extends Component {
         <NewReferenceCard/>
         <ReferenceList/>
       </OverlayBackground>
-      <Modals />
+      <Modals/>
     </View>
   )
 }
@@ -113,7 +113,7 @@ class ReferenceListContainer extends Component {
     referenceCard.style.left = (referenceCard.style.left.replace("px","") + 5) + "px"
 
     let positions = []
-    let referenceIds = this.props.filteredReferences.map((reference, index) => ({id: this.props.getAnchorId(reference), index: index - 1}))
+    let referenceIds = this.props.references.map((reference, index) => ({id: this.props.getAnchorId(reference), index: index - 1}))
     referenceIds = referenceIds.filter(refCard => refCard.id !== referenceId)
     positions = referenceIds.map(referenceId => {
       return {id: referenceId.id, index: referenceId.index, y: document.getElementById(referenceId.id).offsetTop - 200}
@@ -219,7 +219,7 @@ class ReferenceListContainer extends Component {
     if (!this.props.references) return null
     return (
       <View onMouseMove={this.dragReferenceCard} onClick={this.dropReferenceCard}>
-        {this.props.filteredReferences.map((reference, index) => (
+        {this.props.references.map((reference, index) => (
           <ReferenceCard key={reference.url || reference.name || reference.descriptions} index={index} reference={reference} addSortEventListener={this.addSortEventListener}/>
         ))}
         <View id={"placeholder_last"} style={{display: "none", height: "50px", marginTop: "10px", border: "3px dashed lightgray"}} />

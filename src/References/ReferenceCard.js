@@ -35,6 +35,19 @@ class ReferenceCardContainer extends Component {
     this.setState({dynamicStyle: this.state.normalStyle})
   }
 
+  componentWillUpdate = (nextProps, nextState) => {
+    // store has signalled that the user wants to edit this reference but was not asked to sign in yet
+    if (this.props.openEditForm && this.props.allowEdit && !nextState.editMode) {
+      if (this.props.openEditForm === this.props.reference.url) {
+        this.setState({editMode: true}, function() {
+          this.props.dispatch({type: "REMOVE_OPEN_EDIT_FORM"})
+          let backupReference = {...this.props.reference}
+          this.props.dispatch({type: "BACKUP_REFERENCE", reference: backupReference})
+        })
+      }
+    }
+  }
+
   onHover = (event) => {
     if (this.props.reference.collection || this.state.editMode || this.props.reference.deleted || this.props.sortMode || !this.props.reference.url || !this.props.isOnline) return null
     this.setState({dynamicStyle: this.state.hoverStyle})
@@ -50,11 +63,11 @@ class ReferenceCardContainer extends Component {
     setTimeout(function() {
         this.setState({dynamicStyle: this.state.normalStyle})
     }.bind(this), 100)
-    this.OpenUrl()
+    this.openUrl()
     event.stopPropagation()
   }
 
-  OpenUrl = () => {
+  openUrl = () => {
       if (this.props.sortMode || !this.props.reference.url) return null 
     window.open(this.props.reference.url, "_blank")
   }
@@ -69,18 +82,19 @@ class ReferenceCardContainer extends Component {
 
   handleEdit = () => {
     if (this.props.sortMode) return null
+    let reference = {...this.props.reference}
     if (this.state.editMode) {
       this.setState({editMode: false})
-      this.props.dispatch({type: "CLEANUP", url: this.props.reference.url})
+      this.props.dispatch({type: "CLEANUP", url: reference.url})
       this.props.dispatch({type: "REMOVE_BACKUP", url: this.props.reference.url})
     }
     else {
       if (!this.props.allowEdit) {
-        // TODO prompt for username and password
+        this.props.dispatch({type: "SHOW_MODAL", id: "login", url: reference.url})
       }
       else {
         this.setState({editMode: true})
-        let backupReference = {...this.props.reference}
+        let backupReference = {...reference}
         this.props.dispatch({type: "BACKUP_REFERENCE", reference: backupReference})
       }
     }

@@ -2,9 +2,11 @@ import React, { Component } from "react"
 import {connect} from "react-redux"
 import mapStateToProps from "./../mapStateToProps"
 
+import Close from "./../Boilerplate/Close"
 import LineBreak from "./../Boilerplate/LineBreak"
 import Text from "./../Boilerplate/Text"
 import View from "./../Boilerplate/View"
+
 
 export class FeedbackContainer extends Component {
 
@@ -44,12 +46,12 @@ export class FeedbackContainer extends Component {
             <View style={{userSelect: "none", position: "fixed", zIndex: 1000, width: "98%", textAlign: "center", margin: -4}}>
                 <View style={{display: "inline-block", borderRadius: 5, padding: 10, background: color2, border: "1px solid " + color1, color: color1}}>
                     <View>
-                        <View onClick={this.clearFeedback} style={{float: "right", height: 15, width: 15, cursor: "pointer", marginTop: -3, marginRight: -3, paddingBottom: 2}}> &times;</View>
-                        <View>
+                        <View style={{display: "inline-block"}}>
                             {feedback.message.split("\n").map((line, index) => <Text key={index}>{line}{index < feedback.message.split("\n").length - 1 ? <LineBreak/> : null}</Text>)}
                         </View>
-                        </View>
+                        <Close onClick={this.clearFeedback} style={{float: "right", height: 15, width: 15, marginTop: -8, marginRight: -8, paddingBottom: 8}} />
                     </View>
+                </View>
             </View>
         )
     }

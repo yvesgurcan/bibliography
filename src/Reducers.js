@@ -1,9 +1,66 @@
-const initState = {
-    search: {
-        index: 0,
-        history: [""],
+const debugData = [
+    {
+        sort: 1,
+        name: "Eloquent Javascript",
+        subtitle: "test",
+        author: "Marijn Haverbeke",
+        type: "book",
+        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
+        url: "http://eloquentjavascript.net/",
+        added: "2018/01/04",
+        tags: ["JavaScript", "Front-End"],
     },
-}
+    {
+        sort: 2,
+        name: "Test",
+        subtitle: "test",
+        author: "Marijn Haverbeke",
+        type: "book",
+        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
+        anchor: "ajax",
+        added: "2018/01/04",
+        tags: ["JavaScript", "Front-End"],
+
+    },
+    {
+        sort: 3,
+        subtitle: "test",
+        author: "Marijn Haverbeke",
+        type: "book",
+        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
+        url: "http://google.com",
+        added: "2018/01/04",
+        tags: ["JavaScript", "Front-End"],
+    },
+    {
+        sort: 4,
+        url: "https://github.com/id-Software/DOOM",
+        name: "Doom'\"",
+        variousAuthors: true,
+        description: "This is a collection of resources about the creation of the videogame Doom",
+        collection: [
+            {
+                name: "Doom Source Code",
+                url: "https://github.com/id-Software/DOOM",
+                type: "repository",
+                author: "id Software"
+            },
+            {
+                name: "TCRF Page for Doom",
+                url: "https://tcrf.net/Doom_(PC,_1993)",
+                type: "wiki",
+            },
+            {
+                name: "TCRF Page for Doom II",
+                url: "https://tcrf.net/Doom_II:_Hell_on_Earth_(PC)",
+                type: "wiki",
+            },
+        ],
+        added: "2018/01/08",
+        tags: ["Doom", "Videogames", "id Software"],
+
+    },
+]
 
 const ReferenceNotFound = () => {
     return {
@@ -12,17 +69,10 @@ const ReferenceNotFound = () => {
     }
 }
 
-function Reducer (state = initState, action) {
+function Reducer (state = {}, action) {
 
     let newState = {...state}
 
-    if (action.type === "INIT") {
-        return {...initState}
-    }
-
-    let newHistory = []
-    let newIndex = []
-    let filteredReferences = []
     let newReferences = []
     if (state.references) {
         newReferences = [...state.references]        
@@ -32,83 +82,29 @@ function Reducer (state = initState, action) {
     let refIndex = null
     let newFeedback = {...state.feedback}
     let referenceMatch = []
+    let newSignIn = {...state.signIn}
+    let newShowModal = state.showModal
 
     switch (action.type) {
 
         // init
 
         case "GET_REFERENCES_REMOTELY_ONLY":
-            // falls through
+            newFeedback = {
+                message: "Loading references..."
+            }    
+            newState = {
+            ...state,
+                feedback: {...newFeedback}
+            }
+            break
+        
         case "GET_REFERENCES":
             newState = {
                 ...state,
-                showModal: "login",
-                allowEdit: true,
-                references: [
-                    {
-                        sort: 1,
-                        name: "Eloquent Javascript",
-                        subtitle: "test",
-                        author: "Marijn Haverbeke",
-                        type: "book",
-                        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-                        url: "http://eloquentjavascript.net/",
-                        added: "2018/01/04",
-                        tags: ["JavaScript", "Front-End"],
-                    },
-                    {
-                        sort: 2,
-                        name: "Test",
-                        subtitle: "test",
-                        author: "Marijn Haverbeke",
-                        type: "book",
-                        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-                        anchor: "ajax",
-                        added: "2018/01/04",
-                        tags: ["JavaScript", "Front-End"],
-
-                    },
-                    {
-                        sort: 3,
-                        subtitle: "test",
-                        author: "Marijn Haverbeke",
-                        type: "book",
-                        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-                        url: "http://google.com",
-                        added: "2018/01/04",
-                        tags: ["JavaScript", "Front-End"],
-                    },
-                    {
-                        sort: 4,
-                        url: "https://github.com/id-Software/DOOM",
-                        name: "Doom'\"",
-                        variousAuthors: true,
-                        description: "This is a collection of resources about the creation of the videogame Doom",
-                        collection: [
-                            {
-                                name: "Doom Source Code",
-                                url: "https://github.com/id-Software/DOOM",
-                                type: "repository",
-                                author: "id Software"
-                            },
-                            {
-                                name: "TCRF Page for Doom",
-                                url: "https://tcrf.net/Doom_(PC,_1993)",
-                                type: "wiki",
-                            },
-                            {
-                                name: "TCRF Page for Doom II",
-                                url: "https://tcrf.net/Doom_II:_Hell_on_Earth_(PC)",
-                                type: "wiki",
-                            },
-                        ],
-                        added: "2018/01/08",
-                        tags: ["Doom", "Videogames", "id Software"],
-
-                    },
-                ],
+                noSignIn: undefined,
+                references: [],
             }
-            newState.filteredReferences = [...newState.references]
             break
 
         case "CURRENT_WIDTH":
@@ -192,17 +188,82 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 showModal: action.id,
+                openEditForm: action.newReference || action.url,
+            }
+            break
+
+        case "REMOVE_OPEN_EDIT_FORM":
+            newState = {
+                ...state,
+                openEditForm: undefined,
             }
             break
 
         // sign in
 
+        case "DONT_WISH_TO_SIGN_IN":
+        newState = {
+            ...state,
+            allowEdit: true,
+            noSignIn: true,
+            showModal: undefined,
+            addMode: state.openEditForm  === true || state.addMode,
+        }
+        break
+
         case "UPDATE_SIGN_IN":
-            let newSignIn = {...state.signIn}
             newSignIn[action.name] = action.value
             newState = {
                 ...state,
                 signIn: {...newSignIn}
+            }
+            break
+
+        case "SIGN_IN":
+
+            
+            let valid = {
+                user: newSignIn.user && newSignIn.user !== "",
+                password: newSignIn.password && newSignIn.password !== "",
+                passwordLongEnough: newSignIn.password && newSignIn.password.length >= 8
+            }
+
+            if (!valid.user && !valid.password) {
+                newFeedback = {
+                    status: "warning",
+                    message: "Please enter your username and your password.",
+                }
+            }
+            else if (!valid.user) {
+                newFeedback = {
+                    status: "warning",
+                    message: "Please enter your username.",
+                }
+            }
+            else if (!valid.password) {
+                newFeedback = {
+                    status: "warning",
+                    message: "Please enter your password.",
+                }
+            }
+            else if (!valid.passwordLongEnough) {
+                newFeedback = {
+                    status: "warning",
+                    message: "This password is too short.",
+                }
+            }
+            else {
+                newFeedback = {}
+                newShowModal = undefined
+            }
+
+            newState = {
+                ...state,
+                allowEdit: true,
+                noSignIn: undefined,
+                showModal: newShowModal,
+                addMode: state.openEditForm  === true || state.addMode,
+                feedback: {...newFeedback},
             }
             break
 
@@ -290,7 +351,6 @@ function Reducer (state = initState, action) {
                         ...state,
                         feedback: {...newFeedback},
                         references: [{...addedRef}, ...state.references],
-                        filteredReferences: [{...addedRef}, ...state.filteredReferences],
                         addMode: false,
                         newReferenceUrl: undefined,
                         newReferenceName: undefined,
@@ -361,7 +421,6 @@ function Reducer (state = initState, action) {
                 ...state,
                 feedback: {...newFeedback},
                 references: [...newReferences],
-                filteredReferences: [...newReferences],
             }
             break
 
@@ -506,7 +565,6 @@ function Reducer (state = initState, action) {
                 ...state,
                 feedback: {...newFeedback},
                 references: [...newReferences],
-                filteredReferences: [...newReferences],
             }
 
             break
@@ -545,7 +603,6 @@ function Reducer (state = initState, action) {
                 ...state,
                 feedback: {...newFeedback},
                 references: [...newReferences],
-                filteredReferences: [...newReferences],
             }
             break
 
@@ -645,86 +702,106 @@ function Reducer (state = initState, action) {
 
         case "REMOVE_BACKUP":
 
-            newBackup = [...state.referenceBackup.filter((ref, index) => {
-                if (ref.url === action.url) {
-                    refIndex = index
-                    return false
+            if (!state.referenceBackup) {
+                newState = {
+                    feedback: {
+                        status: "error",
+                        message: "No backup found. Changes were applied.",
+                    }
                 }
-                return true
-            })]
- 
- 
-            if (refIndex === null) {
-                 newFeedback = ReferenceNotFound()
             }
-
-            newState = {
-                ...state,
-                referenceBackup: [...newBackup],
-                feedback: {...newFeedback},
+            else {
+                newBackup = [...state.referenceBackup.filter((ref, index) => {
+                    if (ref.url === action.url) {
+                        refIndex = index
+                        return false
+                    }
+                    return true
+                })]
+     
+     
+                if (refIndex === null) {
+                     newFeedback = ReferenceNotFound()
+                }
+    
+                newState = {
+                    ...state,
+                    referenceBackup: [...newBackup],
+                    feedback: {...newFeedback},
+                }    
             }
             break
 
         case "CANCEL_EDIT":
 
-            backupReference = [...state.referenceBackup.filter((ref, index) => {
-                if (ref.url === action.url) {
-                    refIndex = index
-                    return true
-                }
-                return false
-            })]
-
-            newBackup = [...state.referenceBackup.filter((ref, index) => {
-                if (ref.url === action.url) {
-                    return false
-                }
-                return true
-            })]
-
-            if (backupReference.length === 0) {
-                newFeedback = {
-                    status: "error",
-                    message: "The reference could not be restored. No backup found. Changes to the reference were applied.",
-                }
+            if (!state.referenceBackup) {
                 newState = {
                     ...state,
-                    feedback: {...newFeedback}
-                }
-            }
-            else if (backupReference.length > 1) {
-                newFeedback = {
-                    status: "error",
-                    message: "More than one reference backup element was found. Changes to the reference were applied.",
-                }
-                newState = {
-                    ...state,
-                    feedback: {...newFeedback},
+                    feedback: {
+                        status: "error",
+                        message: "No backup found. Changes were applied.",
+                    }
                 }
             }
             else {
-
-                newReferences = [...state.filteredReferences]
-                newReferences.map((ref, index) => {
+                backupReference = [...state.referenceBackup.filter((ref, index) => {
                     if (ref.url === action.url) {
                         refIndex = index
                         return true
                     }
                     return false
-                })
-                
-                if (refIndex === null) {
-                    newFeedback = ReferenceNotFound()
+                })]
+    
+                newBackup = [...state.referenceBackup.filter((ref, index) => {
+                    if (ref.url === action.url) {
+                        return false
+                    }
+                    return true
+                })]
+    
+                if (backupReference.length === 0) {
+                    newFeedback = {
+                        status: "error",
+                        message: "The reference could not be restored. No backup found. Changes to the reference were applied.",
+                    }
+                    newState = {
+                        ...state,
+                        feedback: {...newFeedback}
+                    }
                 }
-
-                newReferences[refIndex] = {...backupReference[0]}
-
-                newState = {
-                    ...state,
-                    references: [...newReferences],
-                    filteredReferences: [...newReferences],
-                    referenceBackup: [...newBackup],
-                    feedback: {...newFeedback},
+                else if (backupReference.length > 1) {
+                    newFeedback = {
+                        status: "error",
+                        message: "More than one reference backup element was found. Changes to the reference were applied.",
+                    }
+                    newState = {
+                        ...state,
+                        feedback: {...newFeedback},
+                    }
+                }
+                else {
+    
+                    newReferences = [...state.references]
+                    newReferences.map((ref, index) => {
+                        if (ref.url === action.url) {
+                            refIndex = index
+                            return true
+                        }
+                        return false
+                    })
+                    
+                    if (refIndex === null) {
+                        newFeedback = ReferenceNotFound()
+                    }
+    
+                    newReferences[refIndex] = {...backupReference[0]}
+    
+                    newState = {
+                        ...state,
+                        references: [...newReferences],
+                        referenceBackup: [...newBackup],
+                        feedback: {...newFeedback},
+                    }
                 }
             }
             break
@@ -755,7 +832,7 @@ function Reducer (state = initState, action) {
 
         case "RESORT_TARGET":
 
-            newReferences = [...state.filteredReferences]
+            newReferences = [...state.references]
 
             let referenceToResort = {...newReferences[state.sortIndex]}
 
@@ -770,7 +847,7 @@ function Reducer (state = initState, action) {
 
             newState = {
                 ...state,
-                filteredReferences: [...newNewReferences],
+                references: [...newNewReferences],
                 placeholderIndex: undefined,
                 sortMode: false,
                 sortTarget: undefined,
@@ -802,7 +879,7 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 references: [...newReferences],
-                filteredReferences: [...newReferences],
+                references: [...newReferences],
                 feedback: {...newFeedback},
             }
             break
@@ -819,7 +896,7 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 references: [...newReferences],
-                filteredReferences: [...newReferences],
+                references: [...newReferences],
                 feedback: {...newFeedback},
             }
             break
@@ -846,312 +923,18 @@ function Reducer (state = initState, action) {
             newState = {
                 ...state,
                 references: [...newReferences],
-                filteredReferences: [...newReferences],
                 feedback: {...newFeedback},
             }
             break
 
-        // search
-            
-        case "UPDATE_SEARCH_STRING":
-            newHistory = [...newState.search.history]
-            newIndex = newState.search.index + 1
-            newHistory.splice(newIndex, 0, action.string)
-            newState = {
-                ...state,
-                search: {
-                    ...newState.search,
-                    history: newHistory,
-                    index: newIndex,
-                }
-            }
-            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
-            newState = {
-                ...newState,
-                filteredReferences: filteredReferences,
-            }
-            break
-
-        case "ADD_STRING_TO_SEARCH":
-            if (newState.search.history[newState.search.index] === " " + action.string) {
-                return newState
-            }
-            newHistory = [...newState.search.history]
-            newIndex = newState.search.index + 1
-            newHistory.splice(newIndex, 0, newState.search.history[newState.search.index] + " " + action.string)
-            newState = {
-                ...state,
-                search: {
-                    ...newState.search,
-                    history: newHistory,
-                    index: newIndex,
-                }
-            }
-            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
-            newState = {
-                ...newState,
-                filteredReferences: filteredReferences,
-            }
-            break
-
-        case "PREVIOUS_SEARCH_STRING":
-            newState = {
-                ...state,
-                search: {
-                    ...newState.search,
-                    index: Math.max(--newState.search.index, 0),
-                }
-            }
-            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
-            newState = {
-                ...newState,
-                filteredReferences: filteredReferences,
-            }
-            break
-
-        case "NEXT_SEARCH_STRING":
-            newHistory = [...newState.search.history]
-            if (newState.search.index + 1 === newState.search.history.length) {
-                if (newHistory[newState.search.index] !== "") {
-                    newHistory = [...newState.search.history, ""]
-                }
-            }
-            newState = {
-                ...state,
-                search: {
-                    ...newState.search,
-                    history: newHistory,
-                    index: Math.min(++newState.search.index, newHistory.length - 1),
-                }
-            }
-            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
-            newState = {
-                ...newState,
-                filteredReferences: filteredReferences,
-            }
-            break
-
-        case "CLEAR_SEARCH_STRING":
-            if (newState.search.history[newState.search.index] === "") {
-                return newState
-            }
-            newState = {
-                ...state,
-                search: {
-                    ...newState.search,
-                    index: ++newState.search.index,
-                    history: [...newState.search.history, ""],
-                }
-            }
-            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
-            newState = {
-                ...newState,
-                filteredReferences: filteredReferences,
-            }
-            break
-
-        case "ADD_AND_TO_SEARCH_STRING":
-            newHistory = [...newState.search.history, newState.search.history[newState.search.index] + " and "]
-            newIndex = newState.search.index + 1
-            newState = {
-                ...state,
-                search: {
-                    ...newState.search,
-                    index: newIndex,
-                    history: newHistory,
-                }
-            }
-            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
-            newState = {
-                ...newState,
-                filteredReferences: filteredReferences,
-            }
-            break
-        
-        case "ADD_NOT_TO_SEARCH_STRING":
-            newHistory = [...newState.search.history, newState.search.history[newState.search.index] + " not "]
-            newIndex = newState.search.index + 1
-            newState = {
-                ...state,
-                search: {
-                    ...newState.search,
-                    index: newIndex,
-                    history: newHistory,
-                }
-            }
-            filteredReferences = ExamineReferences(newState.search.history[newState.search.index], [...newState.references])
-            newState = {
-                ...newState,
-                filteredReferences: filteredReferences,
-            }
-            break
-
         default:
+            if (action.type !== "@@INIT") {
+                console.warn("Action type '" + action.type + "'not recognized.")
+            }
             break
     }
 
     return newState
-}
-
-function ExamineReferences(searchString, references) {
-    
-        // SEARCH FEATURE DEACTIVATED FOR NOW
-        return references
-    
-    searchString = searchString.toLowerCase()
-
-    let negative = false
-
-    let andClusters = []
-    let andMatchesRequired = 0
-    if (searchString.split) {
-        andClusters = searchString.split("and")
-        andClusters = andClusters.map(cluster => cluster.trim())
-        andClusters = andClusters.filter(cluster => cluster !== "")
-        andMatchesRequired = andClusters.length
-    }
-
-    let orClusters = andClusters.map(cluster => cluster.split(/ +/))
-
-    let unmatchedClusters = [...orClusters]
-
-    let results = references.filter((reference) => {
-
-        let globalMatches = {match: 0, matchedClusters: []}
-        let matchResults = null
-
-        unmatchedClusters.map((andCluster, index) => {
-            matchResults = CheckCluster(orClusters[index], andCluster, reference.name, globalMatches.match)
-            globalMatches = {
-                match: matchResults.match,
-                matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
-            }
-            negative = matchResults.negative
-            return null
-        })
-        // if (negative) return false
-        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
-
-        unmatchedClusters.map((andCluster, index) => {
-            matchResults = CheckCluster(orClusters[index], andCluster, reference.description, globalMatches.match)
-            globalMatches = {
-                match: matchResults.match,
-                matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
-            }
-            negative = matchResults.negative
-            return null
-        })
-        // console.log(negative, matchResults)
-        // if (negative) return false
-        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
-
-        unmatchedClusters.map((andCluster, index) => {
-            matchResults = CheckCluster(orClusters[index], andCluster, reference.author, globalMatches.match)
-            globalMatches = {
-                match: matchResults.match,
-                matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
-            }
-            negative = matchResults.negative
-            return null
-        })
-        // if (negative) return false
-        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
-
-        unmatchedClusters.map((andCluster, index) => {
-            reference.tags.map(tag => {
-                matchResults = CheckCluster(orClusters[index], andCluster, tag, globalMatches.match)
-                globalMatches = {
-                    match: matchResults.match,
-                    matchedClusters: [...globalMatches.matchedClusters, ...matchResults.matchedClusters]
-                }
-                negative = matchResults.negative
-                return null
-            })
-            return null
-        })
-        // if (negative) return false
-        unmatchedClusters = RemoveMatchedClusters([...unmatchedClusters], globalMatches.matchedClusters)
-
-        return globalMatches.match >= andMatchesRequired
-    })
-
-    return results
-}
-
-function CheckCluster(allClusters, cluster, text, match) {
-
-    console.log("cluster",cluster)
-
-    let negativeCluster = []
-    let positiveCluster = []
-    let skipNextFragment = false
-    console.log(cluster)
-    cluster.map((fragment, index) => {
-        if (fragment === "not") {
-            skipNextFragment = true
-        }
-        else {
-            if (!skipNextFragment) {
-                skipNextFragment = false
-                positiveCluster.push(fragment)    
-            }
-        }
-        return null
-    })
-
-    allClusters.map((fragment, index) => {
-        if (fragment === "not") {
-            if (index < cluster.length && cluster[Number(index+1)] !== undefined) {
-                negativeCluster.push(cluster[Number(index+1)])
-                skipNextFragment = true    
-            }
-        }
-        return null
-    })
-
-    console.log(
-        {
-            negative: negativeCluster,
-            positive: positiveCluster,
-        }
-    )
-
-    let matchedClusters = []
-    if (positiveCluster.length > 0) {
-        let regEx = new RegExp(positiveCluster.join("|"), "g")
-        let comparison = text.toLowerCase().match(regEx)
-        if (comparison !== null) {
-            matchedClusters.push(comparison[0])
-            match++
-        }
-    }
-
-    let negative = false
-    if (negativeCluster.length > 0) {
-        let regExNegative = new RegExp(negativeCluster.join("|"), "g")
-        let matchedClusters2 = []
-        let comparison2 = text.toLowerCase().match(regExNegative)
-        if (comparison2 !== null) {
-            matchedClusters2.push(comparison2[0])
-            negative = true
-        }
-    }
-
-    return {match: match, matchedClusters: matchedClusters, negative: negative}
-}
-
-function RemoveMatchedClusters(clusters, matchedClusters) {
-
-    if (matchedClusters.length === 0) return [...clusters]
-
-    let unmatchedClusters = [...clusters].map(andCluster => andCluster.filter(orCluster => {
-        if (orCluster.indexOf(matchedClusters) === -1) {
-            return true
-        }
-        return false
-    })).filter(andCluster => andCluster.length > 0)
-
-    return [...unmatchedClusters]
 }
 
 export default Reducer

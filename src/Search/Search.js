@@ -12,6 +12,7 @@ class SearchContainer extends Component {
     this.props.dispatch({type: "UPDATE_SEARCH_STRING", string: event.value})
   }
   render() {
+    return null
     return (
       <View>
         <Label>Search:</Label>

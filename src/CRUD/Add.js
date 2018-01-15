@@ -50,6 +50,7 @@ export class AddContainer extends Component {
     }
     else {
       if (!this.props.allowEdit) {
+        this.props.dispatch({type: "SHOW_MODAL", id: "login", newReference: true})
         // TODO prompt for username and password
       }
       else {

@@ -3,7 +3,6 @@ import {connect} from "react-redux"
 import mapStateToProps from "./../mapStateToProps"
 
 import Button from "./../Boilerplate/Button"
-import Text from "./../Boilerplate/Text"
 
 export class CreateContainer extends Component {
   onClick = () => {
