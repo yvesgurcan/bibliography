@@ -5,7 +5,7 @@ import View from "./../Boilerplate/View"
 
 export class PageTitle extends Component {
   render = () => (
-    <h1>{this.props.children}</h1>
+    <h1 style={{display: "inline-block"}}>{this.props.children}</h1>
   )
 }
 

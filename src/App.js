@@ -13,8 +13,6 @@ import Feedback from "./CRUD/Feedback"
 
 import Modals from "./Modals/Modals"
 
-import Search from "./Search/Search"
-
 import NewReferenceCard from "./References/NewReferenceCard"
 import ReferenceCard from "./References/ReferenceCard"
 
@@ -31,13 +29,28 @@ class AppContainer extends Component {
 class ListPageContainer extends Component {
 
   componentDidMount = () => {
+    this.props.dispatch({type: "INIT_FLAG_ON"})
+    // connectivity
+    this.props.dispatch({type: "UPDATE_CONNECTION_STATUS", isOnline: navigator.onLine})
+    window.addEventListener('offline', this.isOffline)
+    window.addEventListener('online', this.isOnline)
+    // fetch local data
+    this.props.dispatch({type: "GET_LOCAL_CONFIG"})
+    this.props.dispatch({type: "GET_REFERENCES_LOCALLY"})
     // responsiveness
     this.updateWidth()
     window.addEventListener("resize", this.updateWidth)
-    this.props.dispatch({type: "UPDATE_CONNECTION_STATUS", isOnline: navigator.onLine})
-    // connectivity
-    window.addEventListener('offline', this.isOffline)
-    window.addEventListener('online', this.isOnline)
+  }
+
+  componentDidUpdate = () => {
+    // fetch remote data if applicable
+    if (this.props.init && this.props.isOnline && !this.props.noSignIn) {
+      this.props.dispatch({type: "GET_REFERENCES_REMOTELY"})
+      this.props.dispatch({type: "INIT_FLAG_OFF"})
+    }
+    else if (this.props.init) {
+      this.props.dispatch({type: "INIT_FLAG_OFF"})
+    }
   }
 
 
@@ -57,13 +70,12 @@ class ListPageContainer extends Component {
     <View>
       <Feedback />
       <OverlayBackground>
-        <View style={{textAlign: "right"}}>
-          <Login/>
-          <Refresh/>
-        </View>
         <PageTitle>A Programmer's Bibliography</PageTitle>
-        <Search/>
-        <Add />
+        <View style={{display: "inline-block", textAlign: "right"}}>
+          <Add />
+          <Refresh/>
+          <Login/>
+        </View>
         <NewReferenceCard/>
         <ReferenceList/>
       </OverlayBackground>
@@ -77,17 +89,9 @@ const ListPage = connect(mapStateToProps)(ListPageContainer)
 
 class ReferenceListContainer extends Component {
 
-  state = {
-    addMode: false
-  }
-
-  componentDidMount = () => {
-    store.dispatch({type: "INIT"})   
-    store.dispatch({type: "GET_REFERENCES"})
-  }
-
   componentDidUpdate = () => {
-    if (this.props.references) {
+    // TODO we might want to only scroll to the reference when the user first loads the page
+    if (this.props.references && this.props.references.length > 0) {
       let hash = this.props.lowerCase(window.location.hash.replace("#",""))
       if (!this.props.hashtag) {
         let id = this.props.matchReferenceId(hash)
@@ -187,7 +191,7 @@ class ReferenceListContainer extends Component {
       let offsetToBottom = lastRefCard.getBoundingClientRect().height
       if (absoluteY > lastRefCardObject.absoluteY + offsetToBottom) {
         placeholderId = "placeholder_last"    
-        placeholderIndex = this.props.filteredReferences.length - 1    
+        placeholderIndex = this.props.references.length - 1    
       }
     }
 

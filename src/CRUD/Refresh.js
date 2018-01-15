@@ -41,7 +41,7 @@ export class RefreshContainer extends Component {
       this.props.dispatch({type: "SHOW_MODAL", id: "confirmRefresh"})
       return null
     }
-    this.props.dispatch({type: "GET_REFERENCES_REMOTELY_ONLY"})
+    this.props.dispatch({type: "GET_REFERENCES_REMOTELY"})
   }
 
   onMouseOut = () => {

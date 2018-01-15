@@ -69,6 +69,51 @@ const ReferenceNotFound = () => {
     }
 }
 
+const getLocalStorage = (key) => {
+    if (localStorage) {
+        let localData = localStorage.getItem(key)
+        if (localData === "true") {
+            return true
+        }
+        if (localData === "false") {
+            return false
+        }
+        if (checkValidJSON(localData)) {
+            localData = JSON.parse(localData)
+        }
+        return localData     
+    }
+    console.error("localStorage is not supported by this device.")
+}
+
+const setLocalStorage = (key, data) => {
+    if (!key) {
+        console.error("You must pass a key argument to setLocalStorage")
+        return false
+    }
+    if (data === undefined) {
+        console.error("You must pass a valid data argument to setLocalStorage")
+        return false
+    }
+    if (data instanceof Object) {
+        data = JSON.stringify(data)
+    }
+    if (localStorage) {
+        // the variable will be automatically converted to a string
+        localStorage.setItem(key, data)
+        return true  
+    }
+    console.error("localStorage is not supported by this device.")
+}
+
+const checkValidJSON = (string) => {
+    try {
+        return (JSON.parse(string) && !!string)
+    } catch (e) {
+        return false
+    }
+}
+
 function Reducer (state = {}, action) {
 
     let newState = {...state}
@@ -89,7 +134,22 @@ function Reducer (state = {}, action) {
 
         // init
 
-        case "GET_REFERENCES_REMOTELY_ONLY":
+        case "INIT_FLAG_ON":
+            newState = {
+                ...state,
+                init: true,
+                saveCredentials: true,
+            }
+            break
+
+        case "INIT_FLAG_OFF":
+            newState = {
+                ...state,
+                init: undefined
+            }
+            break
+
+        case "GET_REFERENCES_REMOTELY":
             newFeedback = {
                 message: "Loading references..."
             }    
@@ -99,18 +159,21 @@ function Reducer (state = {}, action) {
             }
             break
         
-        case "GET_REFERENCES":
+        case "GET_REFERENCES_LOCALLY":
             newState = {
                 ...state,
-                noSignIn: undefined,
-                references: [],
+                references: [...getLocalStorage("references") || []],
             }
             break
 
-        case "CURRENT_WIDTH":
+        case "GET_LOCAL_CONFIG":
+            let localNoSignIn = getLocalStorage("noSignIn") || false
             newState = {
                 ...state,
-                width: action.width
+                noSignIn: localNoSignIn,
+                allowEdit: localNoSignIn,
+                signIn: getLocalStorage("credentials"),
+                credentials: getLocalStorage("credentials"),
             }
             break
 
@@ -118,6 +181,13 @@ function Reducer (state = {}, action) {
             newState = {
                 ...state,
                 hashtag: action.hashtag,        
+            }
+            break
+
+        case "CURRENT_WIDTH":
+            newState = {
+                ...state,
+                width: action.width
             }
             break
 
@@ -202,14 +272,23 @@ function Reducer (state = {}, action) {
         // sign in
 
         case "DONT_WISH_TO_SIGN_IN":
-        newState = {
-            ...state,
-            allowEdit: true,
-            noSignIn: true,
-            showModal: undefined,
-            addMode: state.openEditForm  === true || state.addMode,
-        }
+            setLocalStorage("noSignIn", true)
+            newState = {
+                ...state,
+                allowEdit: true,
+                noSignIn: true,
+                showModal: undefined,
+                addMode: state.openEditForm  === true || state.addMode,
+            }
         break
+
+        case "REMOVE_NO_SIGN_IN":
+            setLocalStorage("noSignIn", false)
+            newState = {
+                ...state,
+                noSignIn: undefined,
+            }
+            break
 
         case "UPDATE_SIGN_IN":
             newSignIn[action.name] = action.value
@@ -219,8 +298,18 @@ function Reducer (state = {}, action) {
             }
             break
 
-        case "SIGN_IN":
+        case "TOGGLE_SAVE_CREDENTIALS":
+            
+            newState = {
+                ...state,
+                saveCredentials: !state.saveCredentials
+            }
+            if (!newState.saveCredentials) {
+                setLocalStorage("credentials", null)
+            }
+            break
 
+        case "SIGN_IN":
             
             let valid = {
                 user: newSignIn.user && newSignIn.user !== "",
@@ -255,6 +344,12 @@ function Reducer (state = {}, action) {
             else {
                 newFeedback = {}
                 newShowModal = undefined
+            }
+
+            setLocalStorage("noSignIn", false)
+            // TODO save credentials locally after the API request returned (if the credentials are valid, then save then; otherwise, drop them)
+            if (state.saveCredentials) {
+                setLocalStorage("credentials", {...newSignIn})                
             }
 
             newState = {
@@ -347,14 +442,16 @@ function Reducer (state = {}, action) {
                         status: "success",
                         message: "New reference successfully created."
                     }
+                    newReferences = [{...addedRef}, ...state.references]
                     newState = {
                         ...state,
                         feedback: {...newFeedback},
-                        references: [{...addedRef}, ...state.references],
+                        references: [...newReferences],
                         addMode: false,
                         newReferenceUrl: undefined,
                         newReferenceName: undefined,
-                    }   
+                    }
+                    setLocalStorage("references", [...newReferences])
                 }
 
             }
@@ -680,6 +777,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences],
                 caseInsensitiveAnchors: undefined,
             }
+            setLocalStorage("references", [...newReferences])
 
             break
 
@@ -853,6 +951,7 @@ function Reducer (state = {}, action) {
                 sortTarget: undefined,
                 sortIndex: undefined,
             }
+            setLocalStorage("references", [...newNewReferences])
             break
 
         // delete
@@ -878,7 +977,6 @@ function Reducer (state = {}, action) {
 
             newState = {
                 ...state,
-                references: [...newReferences],
                 references: [...newReferences],
                 feedback: {...newFeedback},
             }

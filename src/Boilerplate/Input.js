@@ -49,20 +49,20 @@ class TextAreaContainer extends Component {
 export const TextArea = connect(mapStateToProps)(TextAreaContainer)
 
 class CheckboxContainer extends Component {
-  onChange = (input) => {
-    if (!this.props.onChange) {
-      console.error("Checkbox '" + this.props.name + "' does not have an onChange prop.")
+  onClick = (input) => {
+    if (!this.props.onClick) {
+      console.error("Checkbox '" + this.props.name + "' does not have an onClick prop.")
       return null
     }
     let alteredInput = input.target
     alteredInput.inputType = "checkbox"
-    this.props.onChange(alteredInput)
+    this.props.onClick(alteredInput)
   }
   render = () => {
     let props = {...this.props}
     return (
       <Text>
-        <input name={this.props.name} id={this.props.name} disabled={props.disabled || props.sortMode} type="checkbox" onChange={this.onChange} checked={props.value || ""} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
+        <input name={this.props.name} id={this.props.name} disabled={props.disabled || props.sortMode} type="checkbox" onClick={this.onClick} checked={props.checked || props.value || false} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
         <Label htmlFor={this.props.name}>{this.props.children}</Label>
       </Text>
     )
