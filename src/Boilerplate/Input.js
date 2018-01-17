@@ -67,7 +67,7 @@ class CheckboxContainer extends Component {
     let props = {...this.props}
     return (
       <Text>
-        <input name={this.props.name} id={this.props.name} disabled={props.disabled || props.sortMode} type="checkbox" onClick={this.onClick} checked={props.checked || props.value || false} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
+        <input name={this.props.name} id={this.props.name} disabled={props.disabled || props.sortMode} type="checkbox" onChange={this.onClick} checked={props.checked || props.value || false} style={{padding: 5, marginBottom: 10, border: "1px solid lightgray", ...props.style}}/>
         <Label htmlFor={this.props.name}>{this.props.children}</Label>
       </Text>
     )

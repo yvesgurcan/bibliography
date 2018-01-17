@@ -130,7 +130,8 @@ class ReferenceCardContainer extends Component {
   }
 
   saveRemotely = (input) => {
-    this.props.dispatch({type: "SAVE_REMOTELY", name: input.name})
+    let reference = this.props.reference
+    this.props.dispatch({type: "SAVE_REMOTELY", url: reference.url, name: input.name})
   }
 
   render = () => {

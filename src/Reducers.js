@@ -1,3 +1,6 @@
+import ApiHandler from "./ApiHandler"
+
+/*
 const debugData = [
     {
         sort: 1,
@@ -61,12 +64,28 @@ const debugData = [
 
     },
 ]
+*/
 
 const ReferenceNotFound = () => {
     return {
         status: "error",
         message: "The reference could not be found."
     }
+}
+
+const findReference = (url, array) => {
+    let refIndex = null
+    let reference = [...array.filter((ref, index) => {
+        if (ref.url === url) {
+            refIndex = index
+            return true
+        }
+        return false
+    })]
+    if (reference.length > 0) {
+        reference = reference[0]
+    }
+    return {reference: reference, index: refIndex}
 }
 
 const getLocalStorage = (key) => {
@@ -131,6 +150,11 @@ function Reducer (state = {}, action) {
     let newShowModal = state.showModal
 
     let localReferences = []
+
+    let result = {}
+    let unsavedResult = {}
+    let unsavedChanges = [...state.unsavedChanges || []]
+    let unsavedRef = []
 
     switch (action.type) {
 
@@ -530,10 +554,70 @@ function Reducer (state = {}, action) {
             break
 
         case "SAVE_REMOTELY":
+            state.isOnline = false
+
+            // user is online
             if (state.isOnline) {
-                // TODO api request
-                // action.name
+
+                result = findReference(action.url, state.references)
+                let data = {}
+
+                // reference was found: prep request data
+                if (result.index !== null) {
+
+                    data = {
+                        url: result.reference.url,
+                        name: action.name,
+                        value: result.reference[action.name],
+                    }
+                    
+                    // send request to API
+                    ApiHandler("save_reference", data)
+                }
+                else {
+                    newFeedback = ReferenceNotFound()
+                }
             }
+            // user is offline
+            else {
+
+                unsavedResult = findReference(action.url, unsavedChanges)
+                result = findReference(action.url, state.references)
+
+                // the reference was not in the normal array for some reason
+                if (result.index === null) {
+                    newFeedback = ReferenceNotFound()
+                }
+
+                // the reference does not have any unsaved changes: add the update to the list that will be sent when the user is online again
+                else if (unsavedResult.index === null) {
+                    
+                    // add the data to the list of unsaved changes
+                    unsavedRef = {url: result.reference.url}
+                    unsavedRef[action.name] = result.reference[action.name]
+                    unsavedChanges = [...unsavedChanges, unsavedRef]
+
+                }
+
+                // amend the existing element in the array that will be sent when the user is online
+                else {
+
+                    let savedRef = {...unsavedResult.reference}
+                    savedRef[action.name] = result.reference[action.name]
+                    unsavedChanges[unsavedResult.index] = savedRef
+
+                }
+
+                newState = {
+                    ...state,
+                    feedback: {...newFeedback},
+                    unsavedChanges: [...unsavedChanges],
+                }
+                
+            }
+
+            return newState
+
             break
 
         case "ADD_TAG":
@@ -1022,7 +1106,6 @@ function Reducer (state = {}, action) {
 
             newState = {
                 ...state,
-                references: [...newReferences],
                 references: [...newReferences],
                 feedback: {...newFeedback},
             }
