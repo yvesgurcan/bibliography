@@ -1,5 +1,8 @@
 import apiHandler from "./_apiHandler"
-import {store} from './mapStateToProps'
+import {
+    putReferencesInStore,
+    saveCredentialsLocally,
+} from './apiCallbacks'
 
 // TODO: the whole Redux logic should probably moved to a new folder ("/Store"?)
 
@@ -83,30 +86,6 @@ const checkValidJSON = (string) => {
         return (JSON.parse(string) && !!string)
     } catch (e) {
         return false
-    }
-}
-
-// api callbacks
-// TODO: move these functions to their own file
-
-const putReferencesInStore = (response) => {
-    if (response) {
-        if (response.references) {
-            store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_STORE", references: [...response.references]})
-            store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_LOCALSTORAGE", references: [...response.references]})    
-            return true   
-        }
-
-    }
-
-    throw new Error("No 'references' object was found in the response")
-}
-
-const saveCredentialsLocally = (response, requestPayload) => {
-    if (response) {
-        if (response.authenticated) {
-            store.dispatch({type: "PUT_CREDENTIALS_IN_APP", credentials: {...requestPayload.credentials}})
-        }
     }
 }
 
