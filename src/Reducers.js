@@ -1,4 +1,4 @@
-import apiHandler from "./_apiHandler"
+import apiHandler from "./apiHandler"
 import {
     putReferencesInStore,
     saveCredentialsLocally,
@@ -207,6 +207,18 @@ function Reducer (state = {}, action) {
 
         // user messages
 
+        case "UPDATE_FEEDBACK": {
+          let {feedback} = {
+            ...action.feedback
+          }
+          newState = {
+              ...state,
+              feedback,        
+          }
+
+          break
+        }
+
         case "CLEAR_FEEDBACK":
             newState = {
                 ...state,
@@ -383,8 +395,15 @@ function Reducer (state = {}, action) {
                     message: "This password is too short.",
                 }
             } else {
-                newFeedback = {}
-                newShowModal = undefined
+              newFeedback = {}
+              newShowModal = undefined
+              apiHandler(
+                "post",
+                "signIn",
+                {credentials: {...newSignIn}},
+                saveCredentialsLocally,
+              )
+
             }
 
             setLocalStorage("noSignIn", false)
@@ -398,17 +417,9 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
             }
 
-            apiHandler(
-                "post",
-                "signIn",
-                {credentials: {...newSignIn}},
-                saveCredentialsLocally,
-            )
-
             break
 
         case "TOGGLE_SAVE_CREDENTIALS":
-            
             newState = {
                 ...state,
                 saveCredentials: !state.saveCredentials
@@ -419,15 +430,25 @@ function Reducer (state = {}, action) {
             break
 
         case "PUT_CREDENTIALS_IN_APP": {
-            newState = {
-                ...state,
-                ...action.credentials,
-            }
-            if (state.saveCredentials) {
-                setLocalStorage("credentials", {...action.credentials})
-            }
+          let credentials = {
+            ...action.credentials
+          }
 
-            break
+          if (!credentials.user && !credentials.password) {
+            credentials = undefined
+          }
+
+          newState = {
+            ...state,
+            ...action.isAuthenticated,
+            credentials: credentials,
+          }
+
+          if (state.saveCredentials) {
+            setLocalStorage("credentials", {...action.credentials})
+          }
+
+          break
         }
 
         // api
