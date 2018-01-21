@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {Provider, connect} from "react-redux"
-import mapStateToProps, {store} from "./mapStateToProps"
+import mapStateToProps, {store} from "./Store/mapStateToProps"
 
 import {PageTitle} from "./Boilerplate/Headings"
 import {OverlayBackground} from "./Boilerplate/Overlay"

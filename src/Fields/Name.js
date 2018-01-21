@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {connect} from "react-redux"
-import mapStateToProps from "./../mapStateToProps"
+import mapStateToProps from "./../Store/mapStateToProps"
 
 import {ReferenceName} from "./../Boilerplate/Headings"
 import {TextInput} from "./../Boilerplate/Input"

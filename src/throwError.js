@@ -1,4 +1,4 @@
-import {store} from './mapStateToProps'
+import {store} from './Store/mapStateToProps'
 
 const throwError = function throwError(message, wrapDispatch) {
     if (process.env.NODE_ENV === 'production') {

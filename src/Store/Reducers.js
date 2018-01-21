@@ -1,36 +1,12 @@
-import apiHandler from "./apiHandler"
+import apiHandler from './../API-client/apiHandler'
 import {
     putReferencesInStore,
     saveCredentialsLocally,
-} from './apiCallbacks'
-
-// TODO: the whole Redux logic should probably moved to a new folder ("/Store"?)
-
-// utility functions
-// TODO: move these functions to their own file
-const ReferenceNotFound = () => {
-    return {
-        status: "error",
-        message: "The reference could not be found."
-    }
-}
-
-const findReference = (url, array) => {
-    let refIndex = null
-    let reference = [...array.filter((ref, index) => {
-        if (ref.url === url) {
-            refIndex = index
-            return true
-        }
-        return false
-    })]
-
-    if (reference.length > 0) {
-        reference = reference[0]
-    }
-
-    return {reference: reference, index: refIndex}
-}
+} from './../API-client/apiCallbacks'
+import {
+    ReferenceNotFound,
+    findReference
+} from './../Store/utility'
 
 // localStorage
 // TODO: move these functions to their own file
@@ -273,7 +249,7 @@ function Reducer (state = {}, action) {
                 }
             } else if (state.isOnline !== undefined) {
                 newFeedback = {
-                    message: "You are back online. Reconnecting to the server..."
+                    message: "You are back online."
                     // TODO get a fresh set of data *OR* send updates to the server
                 }
             }

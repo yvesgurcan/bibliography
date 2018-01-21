@@ -1,9 +1,9 @@
 import React, { Component } from "react"
 import {connect} from "react-redux"
-import mapStateToProps from "./../mapStateToProps"
+import mapStateToProps from "./../Store/mapStateToProps"
 
-import Label from "./Label"
-import Text from "./Text"
+import Label from "./../Boilerplate/Label"
+import Text from "./../Boilerplate/Text"
 
 class TextInputContainer extends Component {
   onChange = (input) => {

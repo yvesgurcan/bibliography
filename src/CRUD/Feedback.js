@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {connect} from "react-redux"
-import mapStateToProps from "./../mapStateToProps"
+import mapStateToProps from "./../Store/mapStateToProps"
 
 import Close from "./../Boilerplate/Close"
 import LineBreak from "./../Boilerplate/LineBreak"

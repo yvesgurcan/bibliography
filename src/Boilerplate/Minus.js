@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 
-import View from "./View"
+import View from "./../Boilerplate/View"
 
 export class Minus extends Component {
   render = () => {

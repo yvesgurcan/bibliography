@@ -2,9 +2,9 @@ import React, { Component } from "react"
 
 import Text from "./../Boilerplate/Text"
 
-import {Edit, CancelEdit} from "./Edit"
-import Sort from "./Sort"
-import {Delete, CancelDelete, ConfirmDelete} from "./Delete"
+import {Edit, CancelEdit} from "./../CRUD/Edit"
+import Sort from "./../CRUD/Sort"
+import {Delete, CancelDelete, ConfirmDelete} from "./../CRUD/Delete"
 
 class Functionalities extends Component {
 

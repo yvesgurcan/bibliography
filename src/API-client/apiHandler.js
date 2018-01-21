@@ -1,5 +1,5 @@
-import throwError from './throwError'
-import {store} from './mapStateToProps'
+import throwError from './../throwError'
+import {store} from './../Store/mapStateToProps'
 const apiUrl = "http://localhost:5000/"
 
 const apiHandler = (

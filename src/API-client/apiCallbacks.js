@@ -1,4 +1,4 @@
-import {store} from './mapStateToProps'
+import {store} from './../Store/mapStateToProps'
 
 export const putReferencesInStore = (response) => {
   if (response) {
