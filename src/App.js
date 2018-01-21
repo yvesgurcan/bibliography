@@ -1,6 +1,5 @@
 import React, { Component } from "react"
 import {Provider, connect} from "react-redux"
-import throwError from "./throwError"
 import mapStateToProps, {store} from "./mapStateToProps"
 
 import {PageTitle} from "./Boilerplate/Headings"

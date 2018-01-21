@@ -81,14 +81,12 @@ const checkValidJSON = (string) => {
 
 const putReferencesInStore = (response) => {
     if (response.references) {
-        store.dispatch({type: "PUT_REFERENCES_IN_STORE", references: [...response.references]})     
+        store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_STORE", references: [...response.references]})
+        store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_LOCALSTORAGE", references: [...response.references]})    
         return true   
     }
 
-    throw {
-        message: "No 'references' object was found in the response"
-    }
-    return false
+    throw new Error("No 'references' object was found in the response")
 }
 
 function Reducer (state = {}, action) {
@@ -189,12 +187,18 @@ function Reducer (state = {}, action) {
             break
         }
 
-        case "PUT_REFERENCES_IN_STORE": {
+        case "PUT_REMOTE_REFERENCES_IN_STORE": {
             let references = [...action.references]
             newState = {
                 ...state,
                 references,
             }
+
+            break
+        }
+
+        case "PUT_REMOTE_REFERENCES_IN_LOCALSTORAGE": {
+            setLocalStorage("references", [...action.references])
 
             break
         }
@@ -230,6 +234,7 @@ function Reducer (state = {}, action) {
                 status: "error",
                 message: `A server error occurred: ${action.message}.`
             }
+            console.error(feedback.message)
             newState = {
                 ...state,
                 feedback,

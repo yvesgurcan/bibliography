@@ -22,17 +22,12 @@ const apiHandler = (
             // custom error handling
             .then(response => {
                 if (response.status !== 200) {
-                    throw {
-                        message: `Request returned with status code ${response.status}`
-                    }
+                    throw new Error(`Request returned with status code ${response.status}`)
                 }
 
-                const contentType = response.headers.get
-                ("content-type")
+                const contentType = response.headers.get("content-type")
                 if (contentType.indexOf("application/json") === -1) {
-                    throw {
-                        message: `Invalid content-type '${contentType}'. Response body must be a JSON object`
-                    }
+                    throw new Error(`Invalid content-type '${contentType}'. Response body must be a JSON object`)
                 }
 
                 return response.json()
