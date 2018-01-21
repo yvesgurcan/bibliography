@@ -1,4 +1,5 @@
-import ApiHandler from "./ApiHandler"
+import apiHandler from "./apiHandler"
+import {store} from './mapStateToProps'
 
 const ReferenceNotFound = () => {
     return {
@@ -42,6 +43,7 @@ const getLocalStorage = (key) => {
 
         return localData     
     }
+
     console.error("localStorage is not supported by this device.")
 }
 
@@ -77,6 +79,18 @@ const checkValidJSON = (string) => {
     }
 }
 
+const putReferencesInStore = (response) => {
+    if (response.references) {
+        store.dispatch({type: "PUT_REFERENCES_IN_STORE", references: [...response.references]})     
+        return true   
+    }
+
+    throw {
+        message: "No 'references' object was found in the response"
+    }
+    return false
+}
+
 function Reducer (state = {}, action) {
 
     let newState = {...state}
@@ -102,9 +116,6 @@ function Reducer (state = {}, action) {
     let unsavedRef = []
 
     switch (action.type) {
-
-        // init
-
         case "INIT_FLAG_ON":
             newState = {
                 ...state,
@@ -122,21 +133,18 @@ function Reducer (state = {}, action) {
 
             break
 
-        case "GET_REFERENCES_REMOTELY":
-            newFeedback = {
-                message: "Loading references..."
-            }    
+        case "SET_HASHTAG":
             newState = {
-            ...state,
-                feedback: {...newFeedback}
+                ...state,
+                hashtag: action.hashtag,        
             }
 
             break
-        
-        case "GET_REFERENCES_LOCALLY":
+
+        case "SET_CURRENT_WIDTH":
             newState = {
                 ...state,
-                references: [...getLocalStorage("references") || []],
+                width: action.width
             }
 
             break
@@ -153,21 +161,43 @@ function Reducer (state = {}, action) {
 
             break
 
-        case "SET_HASHTAG":
+        case "GET_REFERENCES_LOCALLY":
             newState = {
                 ...state,
-                hashtag: action.hashtag,        
+                references: [...getLocalStorage("references") || []],
             }
 
             break
 
-        case "CURRENT_WIDTH":
+        case "GET_REFERENCES_REMOTELY": {
+            let feedback = {
+                message: "Loading references...",
+            }
+
             newState = {
                 ...state,
-                width: action.width
+                feedback: {...feedback},
+            }
+
+            apiHandler(
+                "get",
+                "references",
+                null,
+                putReferencesInStore,
+            )
+
+            break
+        }
+
+        case "PUT_REFERENCES_IN_STORE": {
+            let references = [...action.references]
+            newState = {
+                ...state,
+                references,
             }
 
             break
+        }
 
         // user messages
 
@@ -178,6 +208,35 @@ function Reducer (state = {}, action) {
             }
 
             break
+
+        case "ERROR": {
+            
+            let feedback = {
+                status: "error",
+                message: `An error occurred: ${action.message}.`
+            }
+
+            newState = {
+                ...state,
+                feedback,
+                error: true,
+            }
+
+            break
+        }
+
+        case "API_ERROR": {
+            let feedback = {
+                status: "error",
+                message: `A server error occurred: ${action.message}.`
+            }
+            newState = {
+                ...state,
+                feedback,
+            }
+
+            break
+        }
 
         // connectivity
 
@@ -535,7 +594,7 @@ function Reducer (state = {}, action) {
                     }
                     
                     // send request to API
-                    ApiHandler("save_reference", data)
+                    apiHandler("put","reference", data)
                 }
                 else {
                     newFeedback = ReferenceNotFound()
@@ -578,8 +637,6 @@ function Reducer (state = {}, action) {
                 }
                 
             }
-
-            return newState
 
             break
 
@@ -1114,12 +1171,13 @@ function Reducer (state = {}, action) {
             setLocalStorage("references", [...newReferences])
             break
 
-        default:
+        default: {
             if (action.type !== "@@INIT") {
-                console.warn("Action type '" + action.type + "'not recognized.")
+                console.warn("Action type '" + action.type + "' not recognized.")
             }
 
             break
+        }
     }
 
     return newState

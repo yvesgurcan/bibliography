@@ -1,13 +1,60 @@
-import {store} from "./mapStateToProps"
+import throwError from './throwError'
+import {store} from './mapStateToProps'
+const apiUrl = "http://localhost:5000/references"
 
-const ApiHandler = (request, payload) => {
+const apiHandler = (
+    method = "get",
+    request = null,
+    payload = null,
+    callback = null,
+) => {
     console.log(
-        "ApiHandler",
+        "apiHandler",
         {
-            request: request,
-            payload: payload,
+            method,
+            request,
+            payload,
         }
     )
+
+    if (request) {
+        fetch(apiUrl)
+            // custom error handling
+            .then(response => {
+                if (response.status !== 200) {
+                    throw {
+                        message: `Request returned with status code ${response.status}`
+                    }
+                }
+
+                const contentType = response.headers.get
+                ("content-type")
+                if (contentType.indexOf("application/json") === -1) {
+                    throw {
+                        message: `Invalid content-type '${contentType}'. Response body must be a JSON object`
+                    }
+                }
+
+                return response.json()
+            })
+            .then(body => {
+                if (callback) {
+                    callback(body)
+                }
+            }) 
+            .catch(error => {
+                debugger
+                store.dispatch({
+                    type: "API_ERROR",
+                    message: error.message,
+                })
+            })
+
+        return null
+    }
+    
+    throwError("Please specify a request", true)
+    
 }
 
-export default ApiHandler
+export default apiHandler
