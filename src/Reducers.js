@@ -447,6 +447,8 @@ function Reducer (state = {}, action) {
             if (state.saveCredentials) {
                 setLocalStorage("credentials", {...action.credentials})
             }
+
+            break
         }
 
         // api
