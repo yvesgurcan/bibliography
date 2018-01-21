@@ -16,4 +16,10 @@ app.get('/references', (req, res) => {
   })
 })
 
+app.get('/signIn', (req, res) => {
+    res.send({
+        authenticated: true,
+    })
+  })
+
 app.listen(port, () => console.log(`Hello! Test server is listening on port ${port}.`))

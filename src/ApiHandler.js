@@ -1,6 +1,6 @@
 import throwError from './throwError'
 import {store} from './mapStateToProps'
-const apiUrl = "http://localhost:5000/references"
+const apiUrl = "http://localhost:5000/"
 
 const apiHandler = (
     method = "get",
@@ -9,7 +9,7 @@ const apiHandler = (
     callback = null,
 ) => {
     console.log(
-        "apiHandler",
+        "apiHandler - request",
         {
             method,
             request,
@@ -18,7 +18,7 @@ const apiHandler = (
     )
 
     if (request) {
-        fetch(apiUrl)
+        fetch(apiUrl + request /* '+ request' is for debug only */)
             // custom error handling
             .then(response => {
                 if (response.status !== 200) {
@@ -33,8 +33,18 @@ const apiHandler = (
                 return response.json()
             })
             .then(body => {
+
+                console.log(
+                    "apiHandler - response",
+                    {
+                        method,
+                        request,
+                        body,
+                    }
+                )
+
                 if (callback) {
-                    callback(body)
+                    callback(body, payload)
                 }
             }) 
             .catch(error => {

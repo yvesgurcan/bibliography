@@ -1,6 +1,10 @@
 import apiHandler from "./apiHandler"
 import {store} from './mapStateToProps'
 
+// TODO: the whole Redux logic should probably moved to a new folder ("/Store"?)
+
+// utility functions
+// TODO: move these functions to their own file
 const ReferenceNotFound = () => {
     return {
         status: "error",
@@ -24,6 +28,9 @@ const findReference = (url, array) => {
 
     return {reference: reference, index: refIndex}
 }
+
+// localStorage
+// TODO: move these functions to their own file
 
 const getLocalStorage = (key) => {
     if (localStorage) {
@@ -79,15 +86,31 @@ const checkValidJSON = (string) => {
     }
 }
 
+// api callbacks
+// TODO: move these functions to their own file
+
 const putReferencesInStore = (response) => {
-    if (response.references) {
-        store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_STORE", references: [...response.references]})
-        store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_LOCALSTORAGE", references: [...response.references]})    
-        return true   
+    if (response) {
+        if (response.references) {
+            store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_STORE", references: [...response.references]})
+            store.dispatch({type: "PUT_REMOTE_REFERENCES_IN_LOCALSTORAGE", references: [...response.references]})    
+            return true   
+        }
+
     }
 
     throw new Error("No 'references' object was found in the response")
 }
+
+const saveCredentialsLocally = (response, requestPayload) => {
+    if (response) {
+        if (response.authenticated) {
+            store.dispatch({type: "PUT_CREDENTIALS_IN_APP", credentials: {...requestPayload.credentials}})
+        }
+    }
+}
+
+// reducers
 
 function Reducer (state = {}, action) {
 
@@ -338,25 +361,19 @@ function Reducer (state = {}, action) {
             }
             break
 
-        case "UPDATE_SIGN_IN":
-            newSignIn[action.name] = action.value
+        case "UPDATE_SIGN_IN": {
+            let signIn = {
+                user: state.signIn.user,
+                password: state.signIn.password,
+            }
+            signIn[action.name] = action.value
             newState = {
                 ...state,
-                signIn: {...newSignIn}
+                signIn: {...signIn},
             }
 
             break
-
-        case "TOGGLE_SAVE_CREDENTIALS":
-            
-            newState = {
-                ...state,
-                saveCredentials: !state.saveCredentials
-            }
-            if (!newState.saveCredentials) {
-                setLocalStorage("credentials", null)
-            }
-            break
+        }
 
         case "SIGN_IN":
             
@@ -393,11 +410,6 @@ function Reducer (state = {}, action) {
 
             setLocalStorage("noSignIn", false)
 
-            // TODO save credentials locally after the API request returned (if the credentials are valid, then save then; otherwise, drop them)
-            if (state.saveCredentials) {
-                setLocalStorage("credentials", {...newSignIn})                
-            }
-
             newState = {
                 ...state,
                 allowEdit: true,
@@ -407,7 +419,35 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
             }
 
+            apiHandler(
+                "post",
+                "signIn",
+                {credentials: {...newSignIn}},
+                saveCredentialsLocally,
+            )
+
             break
+
+        case "TOGGLE_SAVE_CREDENTIALS":
+            
+            newState = {
+                ...state,
+                saveCredentials: !state.saveCredentials
+            }
+            if (!newState.saveCredentials) {
+                setLocalStorage("credentials", null)
+            }
+            break
+
+        case "PUT_CREDENTIALS_IN_APP": {
+            newState = {
+                ...state,
+                ...action.credentials,
+            }
+            if (state.saveCredentials) {
+                setLocalStorage("credentials", {...action.credentials})
+            }
+        }
 
         // api
             
