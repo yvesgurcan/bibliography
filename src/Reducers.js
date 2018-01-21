@@ -1,4 +1,4 @@
-import apiHandler from "./apiHandler"
+import apiHandler from "./_apiHandler"
 import {store} from './mapStateToProps'
 
 // TODO: the whole Redux logic should probably moved to a new folder ("/Store"?)
