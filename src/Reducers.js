@@ -1,71 +1,5 @@
 import ApiHandler from "./ApiHandler"
 
-/*
-const debugData = [
-    {
-        sort: 1,
-        name: "Eloquent Javascript",
-        subtitle: "test",
-        author: "Marijn Haverbeke",
-        type: "book",
-        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-        url: "http://eloquentjavascript.net/",
-        added: "2018/01/04",
-        tags: ["JavaScript", "Front-End"],
-    },
-    {
-        sort: 2,
-        name: "Test",
-        subtitle: "test",
-        author: "Marijn Haverbeke",
-        type: "book",
-        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-        anchor: "ajax",
-        added: "2018/01/04",
-        tags: ["JavaScript", "Front-End"],
-
-    },
-    {
-        sort: 3,
-        subtitle: "test",
-        author: "Marijn Haverbeke",
-        type: "book",
-        description: "This is a book about JavaScript, programming, and the wonders of the digital. ",
-        url: "http://google.com",
-        added: "2018/01/04",
-        tags: ["JavaScript", "Front-End"],
-    },
-    {
-        sort: 4,
-        url: "https://github.com/id-Software/DOOM",
-        name: "Doom'\"",
-        variousAuthors: true,
-        description: "This is a collection of resources about the creation of the videogame Doom",
-        collection: [
-            {
-                name: "Doom Source Code",
-                url: "https://github.com/id-Software/DOOM",
-                type: "repository",
-                author: "id Software"
-            },
-            {
-                name: "TCRF Page for Doom",
-                url: "https://tcrf.net/Doom_(PC,_1993)",
-                type: "wiki",
-            },
-            {
-                name: "TCRF Page for Doom II",
-                url: "https://tcrf.net/Doom_II:_Hell_on_Earth_(PC)",
-                type: "wiki",
-            },
-        ],
-        added: "2018/01/08",
-        tags: ["Doom", "Videogames", "id Software"],
-
-    },
-]
-*/
-
 const ReferenceNotFound = () => {
     return {
         status: "error",
@@ -82,24 +16,30 @@ const findReference = (url, array) => {
         }
         return false
     })]
+
     if (reference.length > 0) {
         reference = reference[0]
     }
+
     return {reference: reference, index: refIndex}
 }
 
 const getLocalStorage = (key) => {
     if (localStorage) {
         let localData = localStorage.getItem(key)
+
         if (localData === "true") {
             return true
         }
+
         if (localData === "false") {
             return false
         }
+
         if (checkValidJSON(localData)) {
             localData = JSON.parse(localData)
         }
+
         return localData     
     }
     console.error("localStorage is not supported by this device.")
@@ -110,14 +50,18 @@ const setLocalStorage = (key, data) => {
         console.error("You must pass a key argument to setLocalStorage")
         return false
     }
+
     if (data === undefined) {
         console.error("You must pass a valid data argument to setLocalStorage")
         return false
     }
+
     if (data instanceof Object) {
         data = JSON.stringify(data)
     }
+
     if (localStorage) {
+
         // the variable will be automatically converted to a string
         localStorage.setItem(key, data)
         return true  
@@ -141,6 +85,7 @@ function Reducer (state = {}, action) {
     if (state.references) {
         newReferences = [...state.references]        
     }
+
     let editReference = []
     let backupReference = []
     let refIndex = null
@@ -166,6 +111,7 @@ function Reducer (state = {}, action) {
                 init: true,
                 saveCredentials: true,
             }
+
             break
 
         case "INIT_FLAG_OFF":
@@ -173,6 +119,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 init: undefined
             }
+
             break
 
         case "GET_REFERENCES_REMOTELY":
@@ -183,6 +130,7 @@ function Reducer (state = {}, action) {
             ...state,
                 feedback: {...newFeedback}
             }
+
             break
         
         case "GET_REFERENCES_LOCALLY":
@@ -190,6 +138,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 references: [...getLocalStorage("references") || []],
             }
+
             break
 
         case "GET_LOCAL_CONFIG":
@@ -201,6 +150,7 @@ function Reducer (state = {}, action) {
                 signIn: getLocalStorage("credentials"),
                 credentials: getLocalStorage("credentials"),
             }
+
             break
 
         case "SET_HASHTAG":
@@ -208,6 +158,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 hashtag: action.hashtag,        
             }
+
             break
 
         case "CURRENT_WIDTH":
@@ -215,6 +166,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 width: action.width
             }
+
             break
 
         // user messages
@@ -224,6 +176,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 feedback: undefined,        
             }
+
             break
 
         // connectivity
@@ -236,24 +189,24 @@ function Reducer (state = {}, action) {
                 newFeedback = {
                     message: "You are not connected.\nAny modification you make will only be available on this device until you are online again."
                 }
-            }
-            else if (!action.isOnline) {
+            } else if (!action.isOnline) {
                 newFeedback = {
                     message: "You are not connected anymore."
                 }
-            }
-            else if (state.isOnline !== undefined) {
+            } else if (state.isOnline !== undefined) {
                 newFeedback = {
                     message: "You are back online. Reconnecting to the server..."
                     // TODO get a fresh set of data *OR* send updates to the server
                 }
             }
+
             newState = {
                 ...state,
                 feedback: {...newFeedback},
                 isOnline: action.isOnline,
                 offlineWarningDisplayed: offlineWarningDisplayed,
             }
+
             break
 
         case "DO_NOT_FOLLOW_LINK_MESSAGE":
@@ -264,11 +217,13 @@ function Reducer (state = {}, action) {
                     message: "You are not connected. All external links have been deactivated until your device is online again."
                 }
             }
+
             newState = {
                 ...state,
                 feedback: {...newFeedback},
                 offlineLinkWarningDisplayed: offlineLinkWarningDisplayed,
             }
+
             break
 
         // modals
@@ -286,6 +241,7 @@ function Reducer (state = {}, action) {
                 showModal: action.id,
                 openEditForm: action.newReference || action.url,
             }
+
             break
 
         case "REMOVE_OPEN_EDIT_FORM":
@@ -293,6 +249,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 openEditForm: undefined,
             }
+
             break
 
         // sign in
@@ -306,7 +263,8 @@ function Reducer (state = {}, action) {
                 showModal: undefined,
                 addMode: state.openEditForm  === true || state.addMode,
             }
-        break
+
+            break
 
         case "REMOVE_NO_SIGN_IN":
             setLocalStorage("noSignIn", false)
@@ -322,6 +280,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 signIn: {...newSignIn}
             }
+
             break
 
         case "TOGGLE_SAVE_CREDENTIALS":
@@ -348,31 +307,28 @@ function Reducer (state = {}, action) {
                     status: "warning",
                     message: "Please enter your username and your password.",
                 }
-            }
-            else if (!valid.user) {
+            } else if (!valid.user) {
                 newFeedback = {
                     status: "warning",
                     message: "Please enter your username.",
                 }
-            }
-            else if (!valid.password) {
+            } else if (!valid.password) {
                 newFeedback = {
                     status: "warning",
                     message: "Please enter your password.",
                 }
-            }
-            else if (!valid.passwordLongEnough) {
+            } else if (!valid.passwordLongEnough) {
                 newFeedback = {
                     status: "warning",
                     message: "This password is too short.",
                 }
-            }
-            else {
+            } else {
                 newFeedback = {}
                 newShowModal = undefined
             }
 
             setLocalStorage("noSignIn", false)
+
             // TODO save credentials locally after the API request returned (if the credentials are valid, then save then; otherwise, drop them)
             if (state.saveCredentials) {
                 setLocalStorage("credentials", {...newSignIn})                
@@ -386,6 +342,7 @@ function Reducer (state = {}, action) {
                 addMode: state.openEditForm  === true || state.addMode,
                 feedback: {...newFeedback},
             }
+
             break
 
         // api
@@ -395,6 +352,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 credentials: {...action.credentials},
             }
+
             // TODO API
             break
         
@@ -403,6 +361,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 allowEdit: true,
             }
+
             break
         
         // add a new reference
@@ -412,6 +371,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 addMode: true,
             }
+
             break
         
          case "ADD_MODE_OFF":
@@ -421,6 +381,7 @@ function Reducer (state = {}, action) {
                 newReferenceUrl: undefined,
                 newReferenceName: undefined,
             }
+
             break
 
         case "EDIT_NEW_REFERENCE_URL":
@@ -428,6 +389,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 newReferenceUrl: action.url
             }
+
             break
         
         case "EDIT_NEW_REFERENCE_NAME":
@@ -435,6 +397,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 newReferenceName: action.name
             }
+
             break
 
         case "CREATE_REFERENCE":
@@ -449,8 +412,7 @@ function Reducer (state = {}, action) {
                     ...state,
                     feedback: {...newFeedback},
                 }
-            }
-            else {
+            } else {
                 referenceMatch = state.references.filter(ref => ref.url === addedRef.url)
 
                 if (referenceMatch.length > 0) {
@@ -462,8 +424,7 @@ function Reducer (state = {}, action) {
                         ...state,
                         feedback: {...newFeedback},
                     }
-                }
-                else {
+                } else {
                     newFeedback = {
                         status: "success",
                         message: "New reference successfully created."
@@ -492,6 +453,7 @@ function Reducer (state = {}, action) {
                     refIndex = index
                     return true
                 }
+
                 return false
             })
 
@@ -504,8 +466,7 @@ function Reducer (state = {}, action) {
             if (newUrl.match(/(^http:\/\/|^https:\/\/)/) === null) {
                 if (newUrl.length <= 6) {
                     newUrl = "http://"                    
-                }
-                else {
+                } else {
                     // TODO: check if newUrl contains fragments of the http(s):// string at the beginning and act accordingly (by replacing the malformed http prefix with a clean one)
                     newUrl = "http://"  + newUrl
                 }
@@ -546,11 +507,13 @@ function Reducer (state = {}, action) {
                 references: [...newReferences],
             }
             setLocalStorage("references", newReferences)
+
             // for checkboxes
             if (state.isOnline && (action.value === false || action.value === true)) {
                 // TODO api request
                 // action.name
             }
+
             break
 
         case "SAVE_REMOTELY":
@@ -633,6 +596,7 @@ function Reducer (state = {}, action) {
             if (refIndex === null) {
                 newFeedback = ReferenceNotFound()
             }
+
             // create a new array
             if (!editReference[0].tags) {
                 editReference[0].tags = [""]
@@ -651,6 +615,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences]
             }
             setLocalStorage("references", newReferences)
+
             break
 
         case "REMOVE_TAG":
@@ -680,6 +645,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences]
             }
             setLocalStorage("references", newReferences)
+
             break
 
         case "ADD_COLLECTION_ITEM":
@@ -724,6 +690,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences]
             }
             setLocalStorage("references", newReferences)
+
             break
 
         case "EDIT_COLLECTION_ITEM":
@@ -766,6 +733,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences],
             }
             setLocalStorage("references", newReferences)
+
             break
 
         case "REMOVE_COLLECTION_ITEM":
@@ -804,6 +772,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences],
             }
             setLocalStorage("references", newReferences)
+
             break
 
         case "SWAP_URLS":
@@ -841,6 +810,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 caseInsensitiveAnchors: "Please note that anchors are not case sensitive. All uppercase characters are replaced by their lowercase counterpart. Additionally, a small set of special characters are not allowed."
             }
+
             break
 
         case "CLEANUP":
@@ -899,6 +869,7 @@ function Reducer (state = {}, action) {
                 referenceBackup: [...newBackup],
                 feedback: {...newFeedback},
             }
+
             break
 
         case "REMOVE_BACKUP":
@@ -931,6 +902,7 @@ function Reducer (state = {}, action) {
                     feedback: {...newFeedback},
                 }    
             }
+
             break
 
         case "CANCEL_EDIT":
@@ -943,8 +915,7 @@ function Reducer (state = {}, action) {
                         message: "No backup found. Changes were applied.",
                     }
                 }
-            }
-            else {
+            } else {
                 backupReference = [...state.referenceBackup.filter((ref, index) => {
                     if (ref.url === action.url) {
                         refIndex = index
@@ -969,8 +940,7 @@ function Reducer (state = {}, action) {
                         ...state,
                         feedback: {...newFeedback}
                     }
-                }
-                else if (backupReference.length > 1) {
+                } else if (backupReference.length > 1) {
                     newFeedback = {
                         status: "error",
                         message: "More than one reference backup element was found. Changes to the reference were applied.",
@@ -979,8 +949,7 @@ function Reducer (state = {}, action) {
                         ...state,
                         feedback: {...newFeedback},
                     }
-                }
-                else {
+                } else {
     
                     newReferences = [...state.references]
                     newReferences.map((ref, index) => {
@@ -1006,6 +975,7 @@ function Reducer (state = {}, action) {
                     setLocalStorage("references", newReferences)
                 }
             }
+
             break
 
         // sort
@@ -1016,6 +986,7 @@ function Reducer (state = {}, action) {
                 sortMode: true,
                 sortIndex: action.referenceIndex,
             }
+
             break
 
         case "EVENT_LISTENER_ARGUMENTS":
@@ -1023,6 +994,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 eventListenerArgs: {...action.arguments},
             }
+
             break
         
         case "SET_PLACEHOLDER_INDEX":
@@ -1030,6 +1002,7 @@ function Reducer (state = {}, action) {
                 ...state,
                 placeholderIndex: action.placeholderIndex,
             }
+
             break
 
         case "RESORT_TARGET":
@@ -1056,6 +1029,7 @@ function Reducer (state = {}, action) {
                 sortIndex: undefined,
             }
             setLocalStorage("references", [...newNewReferences])
+
             break
 
         // delete
@@ -1093,6 +1067,7 @@ function Reducer (state = {}, action) {
                 feedback: {...newFeedback},
             }
             setLocalStorage("references", localReferences)
+
             break
         
         case "DELETE_REFERENCE_STAGE_2":
@@ -1109,6 +1084,7 @@ function Reducer (state = {}, action) {
                 references: [...newReferences],
                 feedback: {...newFeedback},
             }
+
             break
         
         case "CANCEL_DELETION":
@@ -1142,6 +1118,7 @@ function Reducer (state = {}, action) {
             if (action.type !== "@@INIT") {
                 console.warn("Action type '" + action.type + "'not recognized.")
             }
+
             break
     }
 
